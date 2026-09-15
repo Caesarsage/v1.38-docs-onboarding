@@ -1,0 +1,600 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>v1.38 Docs Onboarding Slides</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<style>
+  :root {
+    --ground: #ffffff;
+    --sunk: #f4f4f5;
+    --ink: #18181b;
+    --soft: #52525b;
+    --faint: #78787f;
+    --rule: #e0e0e4;
+    --accent: #2563c9;
+    --green: #17724f;
+    --amber: #925a00;
+    --red: #b33127;
+    --f: "Archivo", "Helvetica Neue", Arial, sans-serif;
+    --m: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #0f0f11; --sunk: #1e1e23; --ink: #f2f2f4; --soft: #a6a6ae;
+      --faint: #86868f; --rule: #2c2c33; --accent: #7ea8f5;
+      --green: #59c095; --amber: #d9a765; --red: #ef8a80;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #0f0f11; --sunk: #1e1e23; --ink: #f2f2f4; --soft: #a6a6ae;
+    --faint: #86868f; --rule: #2c2c33; --accent: #7ea8f5;
+    --green: #59c095; --amber: #d9a765; --red: #ef8a80;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--f);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a {
+    color: var(--accent);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: .18em;
+  }
+  a:hover { text-decoration-thickness: 2px; }
+  a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
+
+  .slide {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    max-width: 58rem;
+    margin: 0 auto;
+    padding: 4.5rem 2rem 6rem;
+  }
+
+  .kicker {
+    font-family: var(--m);
+    font-size: .72rem;
+    font-weight: 500;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 1rem;
+  }
+  .kicker a { color: inherit; }
+  h1 {
+    font-size: clamp(2.6rem, 7vw, 4.6rem);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -.03em;
+    margin: 0;
+    text-wrap: balance;
+  }
+  h2 {
+    font-size: clamp(1.85rem, 4.4vw, 3rem);
+    font-weight: 600;
+    line-height: 1.08;
+    letter-spacing: -.025em;
+    margin: 0 0 1.6rem;
+    text-wrap: balance;
+  }
+  .sub {
+    font-size: clamp(1.05rem, 1.9vw, 1.32rem);
+    color: var(--soft);
+    max-width: 44ch;
+    margin: 1.4rem 0 0;
+    line-height: 1.5;
+  }
+  p { font-size: 1.06rem; line-height: 1.6; color: var(--soft); max-width: 58ch; margin: 0 0 1rem; }
+  strong { color: var(--ink); font-weight: 600; }
+  code {
+    font-family: var(--m);
+    font-size: .88em;
+    background: var(--sunk);
+    padding: .1em .36em;
+    border-radius: 3px;
+  }
+
+  ul { list-style: none; padding: 0; margin: 0; display: grid; gap: .85rem; }
+  li {
+    font-size: clamp(1rem, 1.7vw, 1.16rem);
+    line-height: 1.45;
+    padding-left: 1.5rem;
+    position: relative;
+    color: var(--soft);
+  }
+  li::before {
+    content: "";
+    position: absolute;
+    left: 0; top: .62em;
+    width: .42rem; height: .42rem;
+    background: var(--accent);
+    border-radius: 50%;
+  }
+  li strong { color: var(--ink); }
+
+  /* title slide meta */
+  .meta {
+    display: flex; flex-wrap: wrap; gap: 0 3rem;
+    margin-top: 3rem;
+    font-family: var(--m);
+    font-size: .84rem;
+  }
+  .meta div { display: flex; flex-direction: column; gap: .2rem; }
+  .meta .k { font-size: .66rem; letter-spacing: .12em; text-transform: uppercase; color: var(--faint); }
+  .meta .v { font-size: 1.02rem; font-weight: 700; letter-spacing: -.01em; }
+
+  /* two-column */
+  .two { display: grid; gap: 2rem 3rem; grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr)); }
+  .two h3, .col h3 {
+    font-size: .74rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--faint); margin: 0 0 .9rem; padding-bottom: .5rem; border-bottom: 1px solid var(--rule);
+  }
+
+  /* dates */
+  .dates { display: grid; gap: .55rem; }
+  .date-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1fr);
+    align-items: center;
+    gap: 1rem;
+    padding: .8rem 1rem;
+    background: var(--sunk);
+    border-radius: 4px;
+    border-left: 3px solid var(--rule);
+  }
+  .date-row.ours { border-left-color: var(--accent); }
+  .date-row .what { font-weight: 600; font-size: 1.02rem; }
+  .date-row .off, .date-row .int {
+    font-family: var(--m); font-size: .84rem; font-variant-numeric: tabular-nums;
+  }
+  .date-row .off { color: var(--faint); }
+  .date-row .int { color: var(--accent); font-weight: 700; }
+  .date-head {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1fr);
+    gap: 1rem; padding: 0 1rem .3rem;
+    font-family: var(--m); font-size: .64rem; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--faint);
+  }
+
+  .fixed {
+    margin: .9rem 1rem 0; padding-top: .8rem;
+    border-top: 1px solid var(--rule);
+    font-size: .9rem; color: var(--faint); line-height: 1.7;
+  }
+  .fixed strong { color: var(--soft); }
+
+  /* ladder */
+  .rungs { display: grid; gap: .5rem; }
+  .rung {
+    display: grid; grid-template-columns: 3.4rem minmax(0, 1fr) auto;
+    gap: 1rem; align-items: center;
+    padding: .75rem 1rem;
+    background: var(--sunk);
+    border-radius: 4px;
+    border-left: 3px solid var(--rule);
+  }
+  .rung .id { font-family: var(--m); font-size: 1.15rem; font-weight: 700; }
+  .rung .id small { display: block; font-size: .55rem; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: var(--faint); }
+  .rung .desc { font-size: 1rem; line-height: 1.35; }
+  .rung .day { font-family: var(--m); font-size: .8rem; color: var(--faint); white-space: nowrap; }
+  .rung.b { border-left-color: var(--accent); } .rung.b .id { color: var(--accent); }
+  .rung.s { border-left-color: var(--amber); } .rung.s .id { color: var(--amber); }
+  .rung.x { border-left-color: var(--red); }   .rung.x .id { color: var(--red); }
+
+  /* steps */
+  .steps { display: grid; gap: 1.6rem; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); }
+  .stepn {
+    font-family: var(--m); font-size: 2.2rem; font-weight: 700;
+    color: var(--accent); line-height: 1; letter-spacing: -.04em;
+  }
+  .step h3 { font-size: 1.1rem; font-weight: 600; letter-spacing: -.01em; margin: .5rem 0; border: 0; padding: 0; text-transform: none; color: var(--ink); }
+  .step p { font-size: .98rem; margin: 0; }
+
+  /* status */
+  .lights { display: grid; gap: .55rem; }
+  .light {
+    display: grid; grid-template-columns: 5.5rem minmax(0, 1fr);
+    gap: 1.2rem; align-items: baseline;
+    padding: .8rem 1rem; background: var(--sunk); border-radius: 4px;
+    border-left: 3px solid var(--rule);
+  }
+  .light .l { font-family: var(--m); font-size: .78rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+  .light p { margin: 0; font-size: 1rem; }
+  .light.g { border-left-color: var(--green); } .light.g .l { color: var(--green); }
+  .light.y { border-left-color: var(--amber); } .light.y .l { color: var(--amber); }
+  .light.r { border-left-color: var(--red); }   .light.r .l { color: var(--red); }
+
+  /* command block */
+  pre.cmd {
+    font-family: var(--m); font-size: .86rem; line-height: 1.75;
+    color: var(--ink);
+    background: var(--sunk);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 4px 4px 0;
+    padding: .75rem 1rem;
+    margin: 1rem 0 0;
+    overflow-x: auto;
+  }
+  pre.cmd .c { color: var(--faint); }
+
+  .callout {
+    background: var(--sunk);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 4px 4px 0;
+    padding: 1rem 1.2rem;
+    margin: 1.5rem 0 0;
+    font-size: 1.02rem;
+    line-height: 1.5;
+    max-width: 58ch;
+  }
+  .callout strong { color: var(--accent); }
+
+  .fill {
+    font-family: var(--m); font-size: .82rem; color: var(--faint);
+    background: repeating-linear-gradient(45deg, transparent, transparent 4px, var(--rule) 4px, var(--rule) 8px);
+    border: 1px dashed var(--faint); border-radius: 3px; padding: .06em .4em;
+  }
+
+  /* chrome */
+  .bar {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 1rem; padding: .7rem 1.25rem;
+    background: var(--ground);
+    border-top: 1px solid var(--rule);
+    font-family: var(--m); font-size: .74rem; color: var(--faint);
+  }
+  .bar nav { display: flex; gap: .4rem; }
+  .bar button {
+    font-family: var(--m); font-size: .76rem;
+    background: var(--sunk); color: var(--ink);
+    border: 1px solid var(--rule); border-radius: 4px;
+    padding: .3rem .7rem; cursor: pointer;
+  }
+  .bar button:hover { border-color: var(--accent); color: var(--accent); }
+  .bar button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .count { font-variant-numeric: tabular-nums; }
+  .hint { display: none; }
+  @media (min-width: 40rem) { .hint { display: inline; } }
+
+  @media print {
+    :root { --ground: #fff; --sunk: #f3f3f4; --ink: #000; --soft: #222; --faint: #555; }
+    .slide { min-height: 0; break-after: page; padding: 1.5rem 0; justify-content: flex-start; }
+    .slide[hidden] { display: flex !important; }
+    .bar { display: none; }
+    * { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<main id="deck">
+
+  <!-- 1 -->
+  <section class="slide">
+    <p class="kicker">SIG Release · Docs Subteam</p>
+    <h1>Kubernetes v1.38<br>Docs Team</h1>
+    <p class="sub">Welcome. Sixteen weeks, five shadows, one release. Here's what we're doing and what you own.</p>
+    <div class="meta">
+      <div><span class="k">Cycle begins</span><span class="v">31 Aug 2026</span></div>
+      <div><span class="k">Release day</span><span class="v">16 Dec 2026</span></div>
+      <div><span class="k">Docs Lead</span><span class="v">@Caesarsage</span></div>
+    </div>
+  </section>
+
+  <!-- 2 -->
+  <section class="slide" hidden>
+    <p class="kicker">Agenda</p>
+    <h2>What we'll cover</h2>
+    <ul>
+      <li>Who's on the release team, and who's on ours</li>
+      <li>What the Docs team ships, and the three weeks people are away</li>
+      <li>The dates — published, and the ones we quote</li>
+      <li>What you personally own: your KEP slice and your rotations</li>
+      <li><strong>Outreach</strong> — the reminder ladder</li>
+      <li><strong>Release notes</strong> — why you never edit the draft, and how you generate them</li>
+      <li><strong>Branch sync</strong> — four steps, two traps</li>
+      <li>Reporting status, and what to do this week</li>
+    </ul>
+    <div class="callout">The three in bold are what you'll be doing unaided within a fortnight — they're the ones worth your full attention. Stop me anywhere; we don't have to save questions for the end.</div>
+  </section>
+
+  <!-- 3 -->
+  <section class="slide" hidden>
+    <h2>Who we are</h2>
+    <div class="two">
+      <div class="col">
+        <h3>Release team</h3>
+        <ul>
+          <li><strong>Sreeram Venkitesh</strong> — Release Lead</li>
+          <li>Enhancements</li>
+          <li>Documentation</li>
+          <li>Communications</li>
+          <li>Release Signal</li>
+          <li>Branch Manager</li>
+        </ul>
+      </div>
+      <div class="col">
+        <h3>Us — Docs</h3>
+        <ul>
+          <li><strong>Destiny Erhabor</strong> — GMT+1</li>
+          <li><strong>Yashasvi Misra</strong> — IST</li>
+          <li><strong>Subhasmita Swain</strong> — GMT+2</li>
+          <li><strong>Anshuman Tripathi</strong> — PT</li>
+          <li><strong>Chiamaka Chielo</strong> — GMT+1</li>
+          <li><strong>Abraham Alfaro Sosa</strong> — UTC−6</li>
+        </ul>
+      </div>
+    </div>
+    <div class="callout">Between us we cover <strong>APAC, EMEA and the Americas</strong> — which is the point. Work is assigned per-person on the <a href="https://github.com/orgs/kubernetes/projects/269">v1.38 tracking board, Docs view</a>. Your KEPs are the ones with your name in <code>Docs Assignee</code>.</div>
+  </section>
+
+  <!-- 4 -->
+  <section class="slide" hidden>
+    <h2>We ship two things</h2>
+    <div class="two">
+      <div class="col">
+        <h3>Documentation</h3>
+        <ul>
+          <li>Find every enhancement that needs docs, track it to merged</li>
+          <li>Keep <code>dev-1.38</code> in sync with <code>main</code></li>
+          <li>Review docs PRs; get technical accuracy from the owning SIG</li>
+          <li>Merge the docs and unfreeze the website on release day</li>
+        </ul>
+      </div>
+      <div class="col">
+        <h3>Release notes</h3>
+        <ul>
+          <li>Generate notes for every alpha, beta and rc</li>
+          <li>Edit to the style guide all cycle, not at the end</li>
+          <li>Collect Known Issues; validate themes with SIG leads</li>
+          <li>Land the Final Release Notes PR before the cut</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 -->
+  <section class="slide" hidden>
+    <p class="kicker">The shape of this cycle</p>
+    <h2>Three weeks where people may be away</h2>
+    <ul>
+      <li><strong>KubeCon China, 7–9 Sep</strong> — week 2. Barely affects us.</li>
+      <li><strong>KubeCon NA, 9–12 Nov</strong> — week 11. KEP owners and SIG reviewers might be hard to reach, so anything we send that week may land flat. Get outreach out before it, and follow up after.</li>
+      <li><strong>US Thanksgiving, 26 Nov</strong> — week 13. Two days after our ready-for-review deadline, and many SIG Docs approvers are US-based.</li>
+    </ul>
+    <div class="callout">Ready-for-review is <strong>24 Nov</strong> and Docs Freeze is <strong>3 Dec (AoE)</strong>. Nine calendar days — but roughly <strong>five working days</strong> of review capacity for the entire release. Everything we do in weeks 9–12 exists to make that week survivable.</div>
+  </section>
+
+  <!-- 6 -->
+  <section class="slide" hidden>
+    <p class="kicker"><a href="https://github.com/kubernetes/sig-release/blob/master/releases/release-1.38/README.md">The v1.38 timeline ↗</a></p>
+    <h2>We work a week ahead of every deadline</h2>
+    <div class="date-head"><span></span><span>Published deadline</span><span>Ours — quote this</span></div>
+    <div class="dates">
+      <div class="date-row ours"><span class="what">Placeholder PRs open</span><span class="off">Thu 29 Oct (AoE)</span><span class="int">Thu 22 Oct</span></div>
+      <div class="date-row ours"><span class="what">PRs ready for review</span><span class="off">Tue 24 Nov</span><span class="int">Tue 17 Nov</span></div>
+      <div class="date-row ours"><span class="what">Docs Freeze — all merged</span><span class="off">Thu 3 Dec (AoE)</span><span class="int">Tue 24 Nov</span></div>
+      <div class="date-row ours"><span class="what">Final Release Notes merged</span><span class="off">Wed 16 Dec</span><span class="int">Mon 14 Dec (AoE)</span></div>
+    </div>
+    <p class="fixed">Those four are ours to hit. These are fixed and we plan around them:
+      <strong>Enhancements Freeze</strong> Tue 29 Sep · <strong>Code Freeze</strong> Mon 16 Nov ·
+      <strong>burndown starts</strong> Mon 23 Nov · <strong>v1.38.0 ships</strong> Wed 16 Dec.</p>
+    <div class="callout"><strong>Always quote the right-hand date to a KEP owner.</strong> The published date is buffer we never spend — it's what absorbs someone going quiet for a week. Write AoE plus the UTC cutoff, never "EOD", which means nothing across timezones.</div>
+  </section>
+
+  <!-- 7 -->
+  <section class="slide" hidden>
+    <h2>What you personally own</h2>
+    <div class="two">
+      <div class="col">
+        <h3>Your KEP slice — all cycle</h3>
+        <ul>
+          <li>~10–14 enhancements, grouped by SIG</li>
+          <li>Reminders R1 → R5</li>
+          <li>Reviewing the docs PR when it lands</li>
+          <li>Keeping the board current — same day, not end of week</li>
+          <li>Telling me early when a KEP goes quiet</li>
+        </ul>
+      </div>
+      <div class="col">
+        <h3>Rotations — <a href="https://docs.google.com/spreadsheets/d/1hf1qxY6O5U1ZjKbtfy3M1sQfBFU7qGT-eJnoj-4Zft8/edit?gid=0#gid=0">self-assign here</a></h3>
+        <ul>
+          <li>Release notes: <strong>assignee ≥1×, reviewer ≥1×</strong></li>
+          <li>Branch sync — the Friday merge into <code>dev-1.38</code></li>
+          <li>Meeting updates: by region, APAC or EMEA</li>
+          <li>Same week, the <strong>Monday summary</strong> in <code>#release-docs</code> — what the <em>team</em> did since last Monday, from the pinned template</li>
+          <li>Burndown updates from 23 Nov</li>
+        </ul>
+      </div>
+    </div>
+    <div class="callout">By December every one of you should have generated release notes, reviewed them, run two branch syncs, and given two verbal updates.</div>
+  </section>
+
+  <!-- 8 -->
+  <section class="slide" hidden>
+    <p class="kicker">Right now it's quiet — that's normal</p>
+    <h2>When the work actually starts</h2>
+    <div class="rungs">
+      <div class="rung b"><span class="id">1<small>sync</small></span><span class="desc"><strong>Website sync</strong> — <code>main</code> → <code>dev-1.38</code>, <em>every Friday from now to release</em></span><span class="day">Fridays</span></div>
+      <div class="rung b"><span class="id">2<small>keps</small></span><span class="desc"><strong>I assign your KEP slice</strong> — off the live board, before the freeze</span><span class="day">by Fri 18 Sep</span></div>
+      <div class="rung b"><span class="id">3<small>notes</small></span><span class="desc"><strong>Release notes rotation begins</strong> — <code>alpha.1</code> is cut</span><span class="day">Wed 23 Sep</span></div>
+      <div class="rung s"><span class="id">4<small>reach</small></span><span class="desc"><strong>Outreach starts</strong> — R1 on the KEP issue: <em>does this need docs?</em></span><span class="day">Wed 23 Sep</span></div>
+      <div class="rung s"><span class="id">5<small>final</small></span><span class="desc">Enhancements Freeze — list goes final, top up any new KEPs, R2 goes out</span><span class="day">29 Sep → 1 Oct</span></div>
+      <div class="rung s"><span class="id">6<small>chase</small></span><span class="desc">R3, R4, R5 — then the placeholder PR deadline. Busiest stretch of your cycle.</span><span class="day">8 → 29 Oct</span></div>
+      <div class="rung x"><span class="id">7<small>review</small></span><span class="desc">Code Freeze — the job switches from chasing to <strong>reviewing real docs PRs</strong></span><span class="day">Mon 16 Nov</span></div>
+      <div class="rung x"><span class="id">8<small>burn</small></span><span class="desc">Burndown Mon/Wed/Fri, then daily from 30 Nov</span><span class="day">Mon 23 Nov</span></div>
+      <div class="rung x"><span class="id">9<small>land</small></span><span class="desc">Docs Freeze → final release notes → release day</span><span class="day">3 → 16 Dec</span></div>
+    </div>
+    <div class="callout"><strong>We start outreach before Enhancements Freeze, not after.</strong> A docs PR has to clear a placeholder, a technical review, a SIG Docs review and a merge before the website freezes on 15 Dec. Every week we buy in September is a week that chain isn't compressed in November.</div>
+  </section>
+
+  <!-- 9 -->
+  <section class="slide" hidden>
+    <p class="kicker">Placeholder PRs · five touches</p>
+    <h2>The reminder ladder</h2>
+    <div class="rungs">
+      <div class="rung b"><span class="id">R1<small>board</small></span><span class="desc">GitHub on the KEP issue. Does this need docs? <em>Before the freeze.</em></span><span class="day">Wed 23 Sep</span></div>
+      <div class="rung b"><span class="id">R2<small>board</small></span><span class="desc">GitHub follow-up on the silent and the no-PR, plus any KEP new since the freeze</span><span class="day">Thu 1 Oct</span></div>
+      <div class="rung s"><span class="id">R3<small>slack</small></span><span class="desc">Slack DM group — first human nudge</span><span class="day">Thu 8 Oct</span></div>
+      <div class="rung s"><span class="id">R4<small>slack</small></span><span class="desc">Slack follow-up, and escalate by SIG</span><span class="day">Thu 15 Oct</span></div>
+      <div class="rung x"><span class="id">R5<small>both</small></span><span class="desc">Final call — GitHub <em>and</em> Slack. Internal target.</span><span class="day">Thu 22 Oct</span></div>
+    </div>
+    <div class="callout">The channel changes because the problem changes. R1 and R2 are informational and leave a public trail. By R3 they've had the information twice — now it needs a person. <strong>An explicit "no docs needed" is as useful to us as a PR</strong> — and getting those early is why R1 goes out before the freeze.</div>
+  </section>
+
+  <!-- 10 -->
+  <!-- <section class="slide" hidden>
+    <p class="kicker">The thing that confuses everyone</p>
+    <h2>Release notes: the drafts are generated</h2>
+    <p><code>release-notes-draft.md</code> and <code>.json</code> are <strong>outputs</strong>, not sources. Every tag, <code>krel</code> re-reads every merged PR and rebuilds both files from scratch.</p>
+    <ul>
+      <li>Fix a typo in the markdown → the next release cut <strong>throws your fix away</strong></li>
+      <li>Fix it in a <strong>map file</strong> (one small YAML per PR) → it survives every regeneration</li>
+      <li>The interactive <code>--fix</code> tool is just a wizard for writing those map files</li>
+    </ul>
+    <div class="callout"><strong>Never edit the draft. Always edit the map.</strong> And run <code>krel release-notes validate</code> before you push — it takes a third of a second, and it's the one check that stops a bad map from blocking the entire release.</div>
+  </section> -->
+
+  <!-- 11 -->
+  <section class="slide" hidden>
+    <p class="kicker">Your Fridays are on the sheet</p>
+    <h2>The branch sync, in four steps</h2>
+    <div class="steps">
+      <div class="step">
+        <p class="stepn">1</p>
+        <h3>Branch off <code>dev-1.38</code></h3>
+        <p><code>git checkout -b merged-main-dev-1.38-&lt;date&gt; upstream/dev-1.38</code> — off the <em>dev</em> branch, never off <code>main</code>.</p>
+      </div>
+      <div class="step">
+        <p class="stepn">2</p>
+        <h3>Merge <code>main</code> in</h3>
+        <p><code>git merge upstream/main</code>. Conflicts are normal: keep the dev branch's feature doc, layer <code>main</code> on top.</p>
+      </div>
+      <div class="step">
+        <p class="stepn">3</p>
+        <h3>Check before pushing</h3>
+        <p><code>git log --oneline upstream/dev-1.38..HEAD</code> — one merge commit plus main's. Hundreds means you used the wrong base.</p>
+      </div>
+      <div class="step">
+        <p class="stepn">4</p>
+        <h3>PR with base <code>dev-1.38</code></h3>
+        <p>GitHub defaults the base to <code>main</code>. Change it. This is the step people miss.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 12 -->
+  <section class="slide" hidden>
+    <p class="kicker">One assignee, one reviewer, every tag</p>
+    <h2>Generating the notes</h2>
+    <p>Once per shell. The token is a classic PAT with <strong>one scope ticked</strong>, and the editor has to be one that <strong>blocks</strong>:</p>
+    <pre class="cmd">export GITHUB_TOKEN=$(gh auth token)   <span class="c"># PAT: repo → public_repo, nothing else</span>
+export EDITOR="code --wait"            <span class="c"># must block until you save and close</span>
+export PATH=$PATH:$(go env GOPATH)/bin</pre>
+    <p><code>--fix</code> is the interactive review. It only works alongside <code>--create-draft-pr</code> — and without it you regenerate a raw draft that drops every correction the team has already made:</p>
+    <pre class="cmd">krel release-notes --create-draft-pr --fix \
+  --tag=v1.38.0-alpha.1 --fork=&lt;your-gh-user&gt; --nomock</pre>
+    <p>Each note opens in your editor as a YAML map, and <strong>every edit you save writes a map file</strong>. If the editor doesn't block — plain <code>code</code>, or nano left unsaved — krel reads an empty file, logs <em>"YAML mapfile is blank, ignoring"</em>, and your edit is gone with no error. <code>Ctrl+C</code> when you're through the queue or out of time; answer <em>y</em> to <em>"continue from the last session?"</em> next run and it skips what you've already done. Then, before you let it open the PR:</p>
+    <pre class="cmd">krel release-notes validate --path-to-release-notes ./maps</pre>
+    <div class="callout"><strong>You need an SSH key on your GitHub account as well.</strong> krel pushes the draft branch to your fork over <code>git@github.com</code> — the token only covers the API and opening the PR. Without a key you get <code>Permission denied (publickey)</code> at the push step, <em>after</em> the whole gather has run. Check with <code>ssh -T git@github.com</code>.</div>
+  </section>
+
+  <!-- 13 -->
+  <section class="slide" hidden>
+    <h2>Reporting status</h2>
+    <div class="lights">
+      <div class="light g"><span class="l">Green</span><p>On track. Percentages at target, branch sync current, notes PR merged on time.</p></div>
+      <div class="light y"><span class="l">Yellow</span><p>Needs attention or might miss. Below 80% at a checkpoint, one or two missed syncs.</p></div>
+      <div class="light r"><span class="l">Red</span><p>Will miss without help. Below 60%, three-plus missed syncs, or a SIG that won't answer.</p></div>
+    </div>
+    <div class="callout">SIG Docs <strong>actively wants</strong> yellow and red early — it's in the handbook. Nobody is annoyed by a yellow in week 6. Everybody is annoyed by a surprise in week 13. And be specific: name the KEP and the ask, not "some things are slow".</div>
+  </section>
+
+  <!-- 14 -->
+  <section class="slide" hidden>
+    <h2>This week</h2>
+    <ul>
+      <li>Complete the <strong>Release Team onboarding guide</strong></li>
+      <li>Sign the CLA — new members, open a dummy PR in <code>contributor-playground</code> now so the bot isn't blocking you later</li>
+      <li>Apply for <strong>org membership</strong>, sponsors <strong>@sreeram-venkitesh</strong> and <strong>@fsmunoz</strong> or <strong>@katcosgrove</strong></li>
+      <li>Join the Slack channels and Google Groups; subscribe to the release calendar</li>
+      <li><strong>Fill the OOO tab</strong> in the <a href="https://docs.google.com/spreadsheets/d/1hf1qxY6O5U1ZjKbtfy3M1sQfBFU7qGT-eJnoj-4Zft8/edit?gid=0#gid=0">responsibility sheet</a> — any dates you're away, <em>before</em> you pick slots</li>
+      <li><strong>Self-assign your rotations</strong> in the same sheet — one tab per section, put your name in an open slot. <strong>Nobody assigns you</strong></li>
+      <li>Install <a href="https://github.com/kubernetes/release/tree/master/docs/krel"><code>krel</code></a>; fork <a href="https://github.com/kubernetes/website"><code>k/website</code></a> and <a href="https://github.com/kubernetes/sig-release"><code>k/sig-release</code></a></li>
+      <li>Fork <a href="https://github.com/kubernetes-sigs/reference-docs"><code>kubernetes-sigs/reference-docs</code></a> as well — regenerating the reference is <strong>post-release work we all share</strong>, not the lead's alone. <a href="https://kubernetes.io/docs/contribute/generate-ref-docs/release-generation/">The process is written up here</a></li>
+      <li>React ✅ in the thread as you finish each one</li>
+    </ul>
+    <div class="callout"><strong>Time off you already know about goes in the OOO tab</strong> — that's what it's for, and it's far easier than swapping a slot later. If something comes up on the day, just tell us <strong>2–3 hours ahead</strong> in your timezone. No explanation needed — it only lets us redistribute.</div>
+  </section>
+
+  <!-- 15 -->
+  <section class="slide" hidden>
+    <p class="kicker">Questions</p>
+    <h2>Ask about any of it</h2>
+    <p>The full written version of this deck has every date, every template, and the outreach walkthrough with screenshots. It's linked in the Slack group along with the responsibility sheet.</p>
+    <p>We're an inclusive team. If something is unclear, or being a shadow is clashing with your availability, just say so — that's a normal conversation, not a problem.</p>
+    <div class="callout">And if fixing something in this process would make your life easier, <strong>do it and open the PR</strong>. Both of the last two Docs Leads shipped tooling while they were shadows. The handbook is ours to improve.</div>
+    <div class="meta">
+      <div><span class="k">Next hard date</span><span class="v">Tue 29 Sep — Enhancements Freeze</span></div>
+      <div><span class="k">Then</span><span class="v">Thu 22 Oct — our placeholder target</span></div>
+    </div>
+  </section>
+
+</main>
+
+<div class="bar">
+  <span class="count" id="count">1 / 15</span>
+
+  <span class="hint">← → to move · click the right side to advance</span>
+  <nav>
+    <button type="button" id="prev" aria-label="Previous slide">← Prev</button>
+    <button type="button" id="next" aria-label="Next slide">Next →</button>
+  </nav>
+</div>
+
+<script>
+  (function () {
+    var slides = Array.prototype.slice.call(document.querySelectorAll(".slide"));
+    var count = document.getElementById("count");
+    var i = 0;
+
+    function show(n) {
+      i = Math.max(0, Math.min(slides.length - 1, n));
+      slides.forEach(function (s, k) { s.hidden = k !== i; });
+      count.textContent = (i + 1) + " / " + slides.length;
+      window.scrollTo(0, 0);
+      document.getElementById("prev").disabled = i === 0;
+      document.getElementById("next").disabled = i === slides.length - 1;
+    }
+
+    document.getElementById("prev").addEventListener("click", function () { show(i - 1); });
+    document.getElementById("next").addEventListener("click", function () { show(i + 1); });
+
+    document.addEventListener("keydown", function (e) {
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      switch (e.key) {
+        case "ArrowRight": case "ArrowDown": case " ": case "PageDown":
+          e.preventDefault(); show(i + 1); break;
+        case "ArrowLeft": case "ArrowUp": case "PageUp":
+          e.preventDefault(); show(i - 1); break;
+        case "Home": e.preventDefault(); show(0); break;
+        case "End": e.preventDefault(); show(slides.length - 1); break;
+      }
+    });
+
+    document.getElementById("deck").addEventListener("click", function (e) {
+      if (e.target.closest("a, button")) return;
+      show(e.clientX > window.innerWidth / 2 ? i + 1 : i - 1);
+    });
+
+    show(0);
+  })();
+</script>
