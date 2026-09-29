@@ -550,7 +550,7 @@
   }
 
   @media (max-width: 44rem) {
-    section { grid-template-columns: 1fr; gap: 0; }
+    section { grid-template-columns: minmax(0, 1fr); gap: 0; }
     .num { padding: 0 0 .8rem; display: flex; gap: .6rem; align-items: baseline; }
     .num small { margin: 0; }
     .twin-row, .twin-head { grid-template-columns: 1fr; }
@@ -607,6 +607,10 @@
   .site-nav a:hover { color: var(--accent); }
   .site-nav a[aria-current="page"] { color: var(--accent); font-weight: 700; }
   .site-nav .brand { color: var(--ink); font-weight: 700; }
+  @media (max-width: 44rem) {
+    .site-nav ul { flex-wrap: nowrap; overflow-x: auto; white-space: nowrap; }
+    .site-nav li:first-child { margin-right: .4rem; }
+  }
   @media print { .site-nav { display: none; } }
 </style>
 </head>

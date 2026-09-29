@@ -92,6 +92,10 @@
   .site-nav a:hover { color: var(--accent); }
   .site-nav a[aria-current="page"] { color: var(--accent); font-weight: 700; }
   .site-nav .brand { color: var(--ink); font-weight: 700; }
+  @media (max-width: 44rem) {
+    .site-nav ul { flex-wrap: nowrap; overflow-x: auto; white-space: nowrap; }
+    .site-nav li:first-child { margin-right: .4rem; }
+  }
   h2[id], h3[id] { scroll-margin-top: 4rem; }
 
   .masthead { padding: 3.5rem 0 2rem; border-bottom: 2px solid var(--ink); margin-bottom: 2.5rem; }
