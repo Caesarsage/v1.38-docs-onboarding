@@ -1,0 +1,667 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reference documentation generation — teaching this to shadows · v1.38 Docs Training</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<style>
+  :root {
+    color-scheme: light;
+    --ground: #ffffff;
+    --surface-sunk: #f4f4f5;
+    --ink: #18181b;
+    --ink-soft: #52525b;
+    --ink-faint: #78787f;
+    --rule: #e0e0e4;
+    --rule-soft: #ededf0;
+    --accent: #2563c9;
+
+    --f-display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+    --f-body: "Source Serif 4", Georgia, "Times New Roman", serif;
+    --f-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+    --measure: 72ch;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --ground: #0f0f11;
+      --surface-sunk: #1e1e23;
+      --ink: #f2f2f4;
+      --ink-soft: #a6a6ae;
+      --ink-faint: #86868f;
+      --rule: #2c2c33;
+      --rule-soft: #232329;
+      --accent: #7ea8f5;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --ground: #0f0f11;
+    --surface-sunk: #1e1e23;
+    --ink: #f2f2f4;
+    --ink-soft: #a6a6ae;
+    --ink-faint: #86868f;
+    --rule: #2c2c33;
+    --rule-soft: #232329;
+    --accent: #7ea8f5;
+  }
+
+  * { box-sizing: border-box; }
+  img { max-width: 100%; }
+
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--f-body);
+    font-size: 1rem;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page { max-width: 52rem; margin: 0 auto; padding: 0 1.5rem 6rem; }
+
+  /* ---------- site nav (shared with the deck) + masthead ---------- */
+
+  .site-nav {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--ground);
+    border-bottom: 1px solid var(--rule);
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+  .site-nav ul {
+    list-style: none;
+    max-width: 61rem;
+    margin: 0 auto;
+    padding: .7rem 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: .35rem 1.3rem;
+    font-family: var(--f-mono);
+    font-size: .74rem;
+  }
+  .site-nav li:first-child { margin-right: auto; }
+  .site-nav a { color: var(--ink-soft); text-decoration: none; }
+  .site-nav a:hover { color: var(--accent); }
+  .site-nav a[aria-current="page"] { color: var(--accent); font-weight: 700; }
+  .site-nav .brand { color: var(--ink); font-weight: 700; }
+  h2[id], h3[id] { scroll-margin-top: 4rem; }
+
+  .masthead { padding: 3.5rem 0 2rem; border-bottom: 2px solid var(--ink); margin-bottom: 2.5rem; }
+  .eyebrow {
+    font-family: var(--f-mono);
+    font-size: .7rem;
+    font-weight: 500;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+  .masthead h1 {
+    font-family: var(--f-display);
+    font-weight: 700;
+    font-size: clamp(2rem, 5vw, 3rem);
+    line-height: 1.05;
+    letter-spacing: -.025em;
+    margin: .7rem 0 0;
+    text-wrap: balance;
+  }
+
+  /* ---------- prose ---------- */
+
+  main > p, main > ul, main > ol, main > blockquote, main > .note { max-width: var(--measure); }
+  main p { margin: 0 0 .95rem; }
+  main ul, main ol { margin: 0 0 1rem; padding-left: 1.25rem; }
+  main li { margin-bottom: .4rem; }
+  main li > ul { margin: .4rem 0 0; }
+
+  h2 {
+    font-family: var(--f-display);
+    font-weight: 600;
+    font-size: 1.6rem;
+    line-height: 1.15;
+    letter-spacing: -.018em;
+    margin: 3rem 0 .85rem;
+    text-wrap: balance;
+  }
+  h3 {
+    font-family: var(--f-display);
+    font-weight: 600;
+    font-size: 1.1rem;
+    letter-spacing: -.005em;
+    margin: 2.2rem 0 .6rem;
+  }
+  h4 {
+    font-family: var(--f-display);
+    font-weight: 600;
+    font-size: .98rem;
+    margin: 1.8rem 0 .5rem;
+  }
+  hr { border: 0; border-top: 1px solid var(--rule-soft); margin: 3rem 0 0; }
+  hr + h2 { margin-top: 2.5rem; }
+
+  a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: .16em; }
+  a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
+  strong { font-weight: 600; }
+
+  code, pre {
+    font-variant-ligatures: none;
+  }
+  code {
+    font-family: var(--f-mono);
+    font-size: .855em;
+    background: var(--surface-sunk);
+    padding: .08em .34em;
+    border-radius: 3px;
+  }
+  pre {
+    font-family: var(--f-mono);
+    font-size: .8rem;
+    line-height: 1.55;
+    background: var(--surface-sunk);
+    border: 1px solid var(--rule-soft);
+    border-radius: 5px;
+    padding: .9rem 1.1rem;
+    margin: 0 0 1.2rem;
+    overflow-x: auto;
+  }
+  pre code { background: none; padding: 0; font-size: inherit; }
+  pre.mermaid { background: none; border: 0; padding: 0; text-align: center; }
+
+  blockquote {
+    background: var(--surface-sunk);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 5px 5px 0;
+    padding: 1rem 1.2rem;
+    margin: 0 0 1.3rem;
+    font-size: .96rem;
+  }
+  blockquote > :last-child { margin-bottom: 0; }
+
+  ul.task-list { list-style: none; padding-left: .2rem; }
+  ul.task-list input { margin: 0 .5rem 0 0; }
+
+  /* ---------- tables ---------- */
+
+  .scroll { overflow-x: auto; margin: 0 0 1.4rem; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--f-display);
+    font-size: .855rem;
+    font-variant-numeric: tabular-nums;
+  }
+  th {
+    text-align: left;
+    font-weight: 600;
+    font-size: .66rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    padding: 0 1rem .5rem 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  td {
+    padding: .6rem 1rem .6rem 0;
+    border-bottom: 1px solid var(--rule-soft);
+    vertical-align: top;
+  }
+  td:last-child, th:last-child { padding-right: 0; }
+
+  footer {
+    margin-top: 4rem;
+    padding-top: 1.5rem;
+    border-top: 2px solid var(--ink);
+    font-family: var(--f-mono);
+    font-size: .74rem;
+    color: var(--ink-faint);
+    display: flex;
+    flex-wrap: wrap;
+    gap: .4rem 1.5rem;
+  }
+
+  @media print {
+    nav, footer { display: none; }
+    pre { white-space: pre-wrap; }
+  }
+</style>
+</head>
+<body>
+<nav class="site-nav" aria-label="Site">
+  <ul>
+    <li><a class="brand" href="../">v1.38 Docs</a></li>
+    <li><a href="../">Onboarding</a></li>
+    <li><a href="../present.html">Slides</a></li>
+    <li><a href="release-notes-walkthrough.html">Release notes: step by step</a></li>
+    <li><a href="release-notes.html">Release notes: how it works</a></li>
+    <li><a href="reference-docs.html" aria-current="page">Reference docs</a></li>
+  </ul>
+</nav>
+
+<div class="page">
+
+  <header class="masthead">
+    <div class="eyebrow">v1.38 Docs · Training</div>
+    <h1>Reference documentation generation — teaching this to
+shadows</h1>
+  </header>
+
+  <main>
+<p>Six reference sets, three generators, nine pull requests, and a
+window that opens the same day as Docs Freeze. I've run this alone for
+the last two cycles; this cycle it gets split across the three buddy
+pairs.</p>
+<p><strong>The authoritative process is my own page</strong>, <a
+href="https://github.com/kubernetes/website/pull/57160">Generating
+Reference Documentation for a Release</a> —
+<code>kubernetes/website#57160</code>, still open, 502 lines, part of
+umbrella <a
+href="https://github.com/kubernetes/website/issues/56385">#56385</a>.
+Every command lives there. <strong>This file does not repeat
+it.</strong> What it adds is the four things the page deliberately
+doesn't carry: <em>when</em> in the cycle, <em>who</em> does which set,
+what to rehearse, and the gotchas that only show up on a real
+machine.</p>
+<blockquote>
+<p><strong>Before the pairs start:</strong> #57160 needs to be merged,
+or shadows are working from an unmerged diff. If it hasn't landed by
+<strong>Fri 30 Oct</strong>, either chase a review or send them the PR's
+Netlify preview link. Don't have five people reading a raw diff.</p>
+</blockquote>
+<hr />
+<h2 id="1-why-this-is-hard">1. Why this is hard</h2>
+<p>Everything else in the cycle is a deadline you can chase people
+about. This is a <strong>build</strong> that depends on artifacts that
+don't exist until very late:</p>
+<div class="scroll">
+<table>
+<thead>
+<tr>
+<th>Dependency</th>
+<th>Available from</th>
+<th>Blocks</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A <code>kubernetes/kubernetes</code> release tag</td>
+<td><code>v1.38.0-beta.0</code> — <strong>Wed 4 Nov</strong></td>
+<td>everything</td>
+</tr>
+<tr>
+<td>Published <code>k8s.io/*</code> staging modules at
+<code>v0.38.x</code></td>
+<td><strong>hours after</strong> each tag</td>
+<td><code>gen-compdocs</code>, <code>genref</code></td>
+</tr>
+<tr>
+<td>A stable API surface</td>
+<td>Code Freeze — <strong>Mon 16 Nov</strong></td>
+<td>output being final</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>And the output is nine pull requests, three of them in a different
+repo, all of which must merge before the website freezes on <strong>Tue
+15 Dec</strong>.</p>
+<p>The staging-module lag is the one that surprises people.
+<code>go get k8s.io/kubernetes@v1.38.0-rc.0</code> succeeds while
+<code>k8s.io/api@v0.38.0</code> still 404s from
+<code>sum.golang.org</code>. Check before you debug:</p>
+<pre class="shell"><code>git ls-remote --tags https://github.com/kubernetes/api.git &quot;v0.${K8S_RELEASE#*.}&quot;</code></pre>
+<p>Empty result means wait, not broken. The two API reference sets read
+only <code>swagger.json</code>, so <strong>Pair A can work through the
+lag</strong> while the other two wait.</p>
+<hr />
+<h2 id="2-when--the-cycle-schedule">2. When — the cycle schedule</h2>
+<p>Two passes. This is the part that makes it teachable.</p>
+<h3 id="rehearsal--week-10-at-beta0-wed-4-nov">Rehearsal — week 10, at
+<code>beta.0</code> (Wed 4 Nov)</h3>
+<p>Throwaway output, nothing merged. The point is to hit every failure
+mode a month early, while there's still slack.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" />Everyone gets their local setup
+working (§4) — this alone eats an afternoon the first time</label></li>
+<li><label><input type="checkbox" /><code>make createversiondirs</code>
+for <code>v1_38</code></label></li>
+<li><label><input type="checkbox" />Swagger prep runs, and
+<code>verify-enum-swagger.sh</code> passes</label></li>
+<li><label><input type="checkbox" />Each pair builds their set once and
+previews it</label></li>
+<li><label><input type="checkbox" /><strong>Check
+<code>genref/config.yaml</code> for new configuration API
+versions</strong> — see §5, this is the one thing that isn't
+auto-detected and the most likely late surprise</label></li>
+<li><label><input type="checkbox" />Note how long each build actually
+takes, so December isn't a guess</label></li>
+</ul>
+<p>Discard the output. Record what broke in log.md.</p>
+<h3 id="real-run--week-14-from-rc0-thu-3-dec">Real run — week 14, from
+<code>rc.0</code> (Thu 3 Dec)</h3>
+<p><code>rc.0</code> is cut the same day as Docs Freeze. The API surface
+has been frozen since 16 Nov, so <code>rc.0</code> output is effectively
+final — cherry-picks between <code>rc.0</code> and <code>rc.1</code>
+rarely touch the reference. Generating at <code>rc.0</code> rather than
+<code>rc.1</code> buys twelve days of review instead of six.</p>
+<div class="scroll">
+<table>
+<thead>
+<tr>
+<th>Date</th>
+<th>Step</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Thu 3 Dec</strong></td>
+<td><code>rc.0</code> cut. Swagger prep. Pair A starts immediately (no
+staging dependency).</td>
+</tr>
+<tr>
+<td><strong>Thu 3 Dec</strong></td>
+<td>Staging modules should be up. Pairs B and C start.</td>
+</tr>
+<tr>
+<td><strong>Fri 4 – Mon 7 Dec</strong></td>
+<td>All nine PRs open. reference-docs PRs first; website PRs held behind
+them.</td>
+</tr>
+<tr>
+<td><strong>Wed 9 Dec</strong></td>
+<td><code>rc.1</code>. Spot-check for surface changes; regenerate only
+if something moved.</td>
+</tr>
+<tr>
+<td><strong>Fri 11 Dec</strong></td>
+<td>Target: all three reference-docs PRs merged, website PRs
+unheld.</td>
+</tr>
+<tr>
+<td><strong>Mon 14 Dec</strong></td>
+<td>Target: all six website PRs merged into <code>dev-1.38</code>.</td>
+</tr>
+<tr>
+<td><strong>Tue 15 Dec</strong></td>
+<td>Website freezes. Anything unmerged now ships next cycle.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>All six website PRs target <code>dev-1.38</code></strong>, so
+they flow to <code>main</code> in the release-day integration merge. A
+reference PR against <code>main</code> is a mistake — it publishes v1.38
+docs before v1.38 exists.</p>
+<hr />
+<h2 id="3-who--the-six-sets-across-three-pairs">3. Who — the six sets
+across three pairs</h2>
+<p>The split falls out of the generators, and maps onto the pairs we
+already have.</p>
+<div class="scroll">
+<table>
+<thead>
+<tr>
+<th>Pair</th>
+<th>Generator</th>
+<th>Sets</th>
+<th>Website PRs</th>
+<th>reference-docs PR</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>A</strong></td>
+<td><code>gen-apidocs</code></td>
+<td>Kubernetes API (HTML) · Kubernetes API (Markdown)</td>
+<td>2</td>
+<td>1 — <code>gen-apidocs/config/v1_38/</code> (config + swagger)</td>
+</tr>
+<tr>
+<td><strong>B</strong></td>
+<td><code>gen-compdocs</code></td>
+<td>Components · kubectl · kubeadm</td>
+<td>3</td>
+<td>1 — <code>gen-compdocs/go.mod</code> + <code>go.sum</code></td>
+</tr>
+<tr>
+<td><strong>C</strong> <em>(me + shadow 5)</em></td>
+<td><code>genref</code></td>
+<td>Configuration APIs</td>
+<td>1</td>
+<td>1 — <code>genref/go.mod</code>, <code>config.yaml</code>,
+<code>output/md/</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Why this allocation:</strong></p>
+<ul>
+<li><strong>Pair A goes first and is unblocked</strong> — only needs
+<code>swagger.json</code>, so they work through the staging-module lag.
+Two PRs from one generator run.</li>
+<li><strong>Pair B has the most PRs but the least judgement.</strong>
+Critical efficiency note: each <code>copycomp-*</code> target
+<em>rebuilds every component page</em>, several minutes each time. Run
+<code>make copycomp</code> <strong>once</strong>, then split the result
+across three branches. Three separate <code>copycomp-*</code> runs is
+three rebuilds for the same bytes.</li>
+<li><strong>Pair C is mine because <code>genref</code> needs the
+judgement call</strong> (§5). It's one PR and the least mechanical work,
+but the only step where a wrong answer silently omits a whole page.</li>
+</ul>
+<p>I own the swagger prep before Pair A starts, and all nine PR
+descriptions get reviewed by me before they go up.</p>
+<hr />
+<h2 id="4-local-setup--the-gotchas-the-page-cant-know">4. Local setup —
+the gotchas the page can't know</h2>
+<p>The page assumes a clean sibling-clone layout. Ours isn't, and
+shadows' won't be either.</p>
+<p><strong>Repos as siblings.</strong> <code>gen-compdocs/go.mod</code>
+carries a <em>relative</em> replace directive
+(<code>../../../../k8s.io/kubernetes</code>). If your clones aren't
+directly under a <code>k8s.io/</code> directory, that path doesn't
+resolve. On my machine the fix is a symlink:</p>
+<pre class="shell"><code>ln -s ~/Documents/open-source-projects/kubernete/k8s.io \
+      ~/Documents/open-source-projects/k8s.io</code></pre>
+<p>Tell shadows this up front. It presents as a baffling Go module
+error, not as a path problem, and it's the single most likely thing to
+stall someone on day one.</p>
+<p><strong>Version matching.</strong> The <code>kubernetes</code>
+checkout has to match the version pinned in
+<code>gen-compdocs/go.mod</code>. Check the <code>k8s.io/kubectl</code>
+version there, then check out the matching tag. Mismatched versions
+produce output that builds fine and is quietly wrong.</p>
+<p><strong>Tooling for
+<code>updateapispec-enums-from-source</code>:</strong> <code>jq</code>,
+<code>curl</code>, <code>openssl</code>, network access, and free TCP
+<strong>2379</strong> (etcd) and <strong>8050</strong> (temporary API
+server). Override with <code>ETCD_PORT</code> / <code>API_PORT</code>.
+It downloads etcd and builds <code>kube-apiserver</code>, so the first
+run takes several minutes — that's normal, not a hang.</p>
+<p><strong>Keep the temp checkout when debugging:</strong>
+<code>KEEP_TMP=1 make updateapispec-enums-from-source</code>.</p>
+<p><strong>Confirmed present on my machine</strong> (2 Sep): all three
+repos, the symlink, <code>hack/verify-enum-swagger.sh</code>, every
+<code>make</code> target the page names, and
+<code>jq</code>/<code>curl</code>/<code>openssl</code>/<code>go</code>/<code>make</code>.
+<code>gen-apidocs/config/</code> currently ends at <code>v1_36</code>,
+so <code>v1_37</code> and <code>v1_38</code> both get created this
+cycle.</p>
+<hr />
+<h2 id="5-the-one-step-that-isnt-automated">5. The one step that isn't
+automated</h2>
+<p>Everything about the <em>API surface</em> is auto-detected: the build
+targets pass <code>--auto-detect</code>, so <code>gen-apidocs</code>
+reads API groups and resources straight from <code>swagger.json</code>.
+New resources appear without anyone touching config.</p>
+<p><strong><code>genref</code> is different.</strong> It generates one
+page per entry in <code>genref/config.yaml</code>, and each entry names
+a Go package and a version path by hand:</p>
+<pre class="yaml"><code>  - name: kubelet-config
+    title: Kubelet Configuration (v1)
+    package: k8s.io/kubelet
+    path: config/v1</code></pre>
+<p>If a component starts serving a new configuration API version in
+v1.38 and nobody adds the entry, <strong>that page simply doesn't
+exist</strong> and nothing fails. No error, no warning — a missing
+page.</p>
+<p>The page carries a shell loop that compares every
+<code>config.yaml</code> entry against the version directories in the
+source. Run it during the <strong>rehearsal</strong>, not in
+December:</p>
+<pre class="shell"><code>cd &lt;rdocs-base&gt;/genref &amp;&amp; go mod download
+# ...the awk/find loop from the page&#39;s &quot;Check for new API versions&quot; section</code></pre>
+<p>Every line it prints is a <em>candidate</em>, not a gap. Several
+older versions are excluded deliberately and the comments in
+<code>config.yaml</code> say why. Judgement: add an entry when a
+component serves a version readers actually configure; keep an older
+entry while the component still serves it. That's the call I'm keeping
+in Pair C.</p>
+<hr />
+<h2 id="6-when-the-output-looks-wrong">6. When the output looks
+wrong</h2>
+<p>Shadows will find rendering bugs and assume the generator is at
+fault. Usually it isn't. <strong>Diagnose in this order:</strong></p>
+<ol type="1">
+<li><strong><code>grep "the broken text" gen-apidocs/config/v1_38/swagger.json</code>.</strong>
+If the bug is already in the swagger, it's upstream in
+<code>kubernetes/kubernetes</code> — nothing downstream can fix it
+correctly.</li>
+<li>If the swagger is clean, look at the generator:
+<code>markdown.go</code>, <code>resource.tmpl</code>, the escape
+function.</li>
+<li>If both look right, it's the Hugo template or Docsy.</li>
+</ol>
+<p>Two known bugs, so nobody re-investigates them:</p>
+<div class="scroll">
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Actually caused by</th>
+<th>Fix belongs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Literal <code>*</code> in prose instead of a bullet list — <em>"X
+binds together: * a * b * c"</em></td>
+<td><code>fmtRawDoc</code> in
+<code>apimachinery/pkg/runtime/swagger_doc_generator.go</code> joins
+multi-line Go doc comments with a space, dropping the newlines before
+swagger is written</td>
+<td><strong>Upstream in k/k.</strong> Don't try to re-inject newlines
+downstream — too many false positives
+(<code>"matches: foo *bar* baz"</code>, globs, multiplication). Visible
+on production today.</td>
+</tr>
+<tr>
+<td>Resource name appears twice — <code>&lt;h1&gt;</code> from
+frontmatter, <code>&lt;h2&gt;</code> from the body</td>
+<td><code>gen-apidocs/generators/templates/resource.tmpl</code> always
+emits <code>## {{.Title}}</code> for the root section, but Docsy already
+renders the title</td>
+<td><strong>In reference-docs.</strong> Special-case the first section
+to emit only <code>&lt;a name="..."&gt;</code>, preserving the anchor.
+Sub-sections keep <code>##</code>. Small template edit.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>And the hard rule:</strong> never hand-edit a generated page.
+The next release overwrites it. Fix it upstream in k/k, or in the
+generator.</p>
+<hr />
+<h2 id="7-three-backends-none-deprecated">7. Three backends, none
+deprecated</h2>
+<p>Shadows reading the Makefile will find <code>api</code>,
+<code>apimd</code>, and <code>apimd-hugo</code> and assume one is
+legacy. None are:</p>
+<ul>
+<li><strong><code>html</code></strong> (<code>make api</code> /
+<code>copyapi</code>) — powers the production single-page API reference
+at
+<code>kubernetes.io/docs/reference/generated/kubernetes-api/v1.38/</code>.
+This is live production output.</li>
+<li><strong><code>markdown</code></strong> (<code>make apimd</code> /
+<code>copyapimd</code>) — Hugo-native pages under
+<code>content/en/docs/reference/kubernetes-api/</code>.</li>
+<li><strong><code>hugo-md</code></strong> (<code>make apimd-hugo</code>)
+— opt-in variant where selected tables emit as markdown tables with
+<code>{class="..."}</code> so website render hooks can enrich them.
+Output to <code>gen-apidocs/build/hugo-md/</code>. Part of the
+shortcodes rollout, <strong>not</strong> part of the v1.38 release
+generation.</li>
+</ul>
+<p>For this cycle: <code>copyapi</code> and <code>copyapimd</code> only.
+Leave <code>apimd-hugo</code> out of the release path.</p>
+<hr />
+<h2 id="8-pr-descriptions">8. PR descriptions</h2>
+<p>Every website PR says how the output was produced, so a reviewer can
+reproduce it:</p>
+<pre class="text"><code>Regenerated the kubectl reference for v1.38.0.
+
+- Generated with `make copycomp-kubectl` from kubernetes-sigs/reference-docs at commit &lt;commit&gt;
+- Generator changes: kubernetes-sigs/reference-docs#&lt;pull request&gt;
+- Generated files only, with no hand edits</code></pre>
+<p>For the two API sets, add how the swagger was produced —
+<em>generated from source with <code>OpenAPIEnums=true</code></em>, or
+copied from a clone. The generated output doesn't reveal which, and it
+changes whether enum values are present.</p>
+<p><strong>Verify the enums landed.</strong> Open a resource such as Pod
+in the preview and search for <code>Possible enum values</code>. If it's
+absent, the swagger was the committed one and the whole API reference is
+quietly missing every enumerated field's allowed values.</p>
+<hr />
+<h2 id="9-what-done-means">9. What "done" means</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />#57160 merged, or shadows have the
+preview link — by <strong>Fri 30 Oct</strong></label></li>
+<li><label><input type="checkbox" />Rehearsal complete at
+<code>beta.0</code>, findings in log.md — week 10</label></li>
+<li><label><input type="checkbox" /><code>genref/config.yaml</code>
+checked for new config API versions — week 10, not December</label></li>
+<li><label><input type="checkbox" /><code>v1_38</code> config dir
+created; swagger prepped; <code>verify-enum-swagger.sh</code>
+passes</label></li>
+<li><label><input type="checkbox" />Six website PRs against
+<code>dev-1.38</code>, three reference-docs PRs, each website PR held
+behind its generator PR</label></li>
+<li><label><input type="checkbox" /><code>Possible enum values</code>
+present in the HTML API reference</label></li>
+<li><label><input type="checkbox" />Generated page count sane vs v1.37;
+no config-api page silently vanished</label></li>
+<li><label><input type="checkbox" />All nine merged before the
+<strong>Tue 15 Dec</strong> freeze</label></li>
+<li><label><input type="checkbox" /><strong>Each pair ran their own
+generator end to end without me driving it</strong> — the actual
+goal</label></li>
+</ul>
+<p>That last box is why we're doing it this way. Reference generation
+has been a single-person dependency for three cycles. If two pairs can
+run it unaided by December, it stops being one.</p>
+  </main>
+
+  <footer>
+    <span>Kubernetes v1.38 · SIG Release · Docs Subteam</span>
+    <span>Maintained by @Caesarsage</span>
+  </footer>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11.4.1/dist/mermaid.min.js"></script>
+<script>
+  if (window.mermaid && document.querySelector("pre.mermaid")) {
+    var dark = document.documentElement.dataset.theme === "dark" ||
+      (!document.documentElement.dataset.theme && matchMedia("(prefers-color-scheme: dark)").matches);
+    mermaid.initialize({ startOnLoad: true, theme: dark ? "dark" : "neutral" });
+  }
+</script>
+</body>
+</html>

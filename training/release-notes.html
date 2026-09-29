@@ -1,0 +1,825 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Release notes generation — how it actually works · v1.38 Docs Training</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<style>
+  :root {
+    color-scheme: light;
+    --ground: #ffffff;
+    --surface-sunk: #f4f4f5;
+    --ink: #18181b;
+    --ink-soft: #52525b;
+    --ink-faint: #78787f;
+    --rule: #e0e0e4;
+    --rule-soft: #ededf0;
+    --accent: #2563c9;
+
+    --f-display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+    --f-body: "Source Serif 4", Georgia, "Times New Roman", serif;
+    --f-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+    --measure: 72ch;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --ground: #0f0f11;
+      --surface-sunk: #1e1e23;
+      --ink: #f2f2f4;
+      --ink-soft: #a6a6ae;
+      --ink-faint: #86868f;
+      --rule: #2c2c33;
+      --rule-soft: #232329;
+      --accent: #7ea8f5;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --ground: #0f0f11;
+    --surface-sunk: #1e1e23;
+    --ink: #f2f2f4;
+    --ink-soft: #a6a6ae;
+    --ink-faint: #86868f;
+    --rule: #2c2c33;
+    --rule-soft: #232329;
+    --accent: #7ea8f5;
+  }
+
+  * { box-sizing: border-box; }
+  img { max-width: 100%; }
+
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--f-body);
+    font-size: 1rem;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page { max-width: 52rem; margin: 0 auto; padding: 0 1.5rem 6rem; }
+
+  /* ---------- site nav (shared with the deck) + masthead ---------- */
+
+  .site-nav {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--ground);
+    border-bottom: 1px solid var(--rule);
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+  .site-nav ul {
+    list-style: none;
+    max-width: 61rem;
+    margin: 0 auto;
+    padding: .7rem 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: .35rem 1.3rem;
+    font-family: var(--f-mono);
+    font-size: .74rem;
+  }
+  .site-nav li:first-child { margin-right: auto; }
+  .site-nav a { color: var(--ink-soft); text-decoration: none; }
+  .site-nav a:hover { color: var(--accent); }
+  .site-nav a[aria-current="page"] { color: var(--accent); font-weight: 700; }
+  .site-nav .brand { color: var(--ink); font-weight: 700; }
+  h2[id], h3[id] { scroll-margin-top: 4rem; }
+
+  .masthead { padding: 3.5rem 0 2rem; border-bottom: 2px solid var(--ink); margin-bottom: 2.5rem; }
+  .eyebrow {
+    font-family: var(--f-mono);
+    font-size: .7rem;
+    font-weight: 500;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+  .masthead h1 {
+    font-family: var(--f-display);
+    font-weight: 700;
+    font-size: clamp(2rem, 5vw, 3rem);
+    line-height: 1.05;
+    letter-spacing: -.025em;
+    margin: .7rem 0 0;
+    text-wrap: balance;
+  }
+
+  /* ---------- prose ---------- */
+
+  main > p, main > ul, main > ol, main > blockquote, main > .note { max-width: var(--measure); }
+  main p { margin: 0 0 .95rem; }
+  main ul, main ol { margin: 0 0 1rem; padding-left: 1.25rem; }
+  main li { margin-bottom: .4rem; }
+  main li > ul { margin: .4rem 0 0; }
+
+  h2 {
+    font-family: var(--f-display);
+    font-weight: 600;
+    font-size: 1.6rem;
+    line-height: 1.15;
+    letter-spacing: -.018em;
+    margin: 3rem 0 .85rem;
+    text-wrap: balance;
+  }
+  h3 {
+    font-family: var(--f-display);
+    font-weight: 600;
+    font-size: 1.1rem;
+    letter-spacing: -.005em;
+    margin: 2.2rem 0 .6rem;
+  }
+  h4 {
+    font-family: var(--f-display);
+    font-weight: 600;
+    font-size: .98rem;
+    margin: 1.8rem 0 .5rem;
+  }
+  hr { border: 0; border-top: 1px solid var(--rule-soft); margin: 3rem 0 0; }
+  hr + h2 { margin-top: 2.5rem; }
+
+  a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: .16em; }
+  a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
+  strong { font-weight: 600; }
+
+  code, pre {
+    font-variant-ligatures: none;
+  }
+  code {
+    font-family: var(--f-mono);
+    font-size: .855em;
+    background: var(--surface-sunk);
+    padding: .08em .34em;
+    border-radius: 3px;
+  }
+  pre {
+    font-family: var(--f-mono);
+    font-size: .8rem;
+    line-height: 1.55;
+    background: var(--surface-sunk);
+    border: 1px solid var(--rule-soft);
+    border-radius: 5px;
+    padding: .9rem 1.1rem;
+    margin: 0 0 1.2rem;
+    overflow-x: auto;
+  }
+  pre code { background: none; padding: 0; font-size: inherit; }
+  pre.mermaid { background: none; border: 0; padding: 0; text-align: center; }
+
+  blockquote {
+    background: var(--surface-sunk);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 5px 5px 0;
+    padding: 1rem 1.2rem;
+    margin: 0 0 1.3rem;
+    font-size: .96rem;
+  }
+  blockquote > :last-child { margin-bottom: 0; }
+
+  ul.task-list { list-style: none; padding-left: .2rem; }
+  ul.task-list input { margin: 0 .5rem 0 0; }
+
+  /* ---------- tables ---------- */
+
+  .scroll { overflow-x: auto; margin: 0 0 1.4rem; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--f-display);
+    font-size: .855rem;
+    font-variant-numeric: tabular-nums;
+  }
+  th {
+    text-align: left;
+    font-weight: 600;
+    font-size: .66rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    padding: 0 1rem .5rem 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  td {
+    padding: .6rem 1rem .6rem 0;
+    border-bottom: 1px solid var(--rule-soft);
+    vertical-align: top;
+  }
+  td:last-child, th:last-child { padding-right: 0; }
+
+  footer {
+    margin-top: 4rem;
+    padding-top: 1.5rem;
+    border-top: 2px solid var(--ink);
+    font-family: var(--f-mono);
+    font-size: .74rem;
+    color: var(--ink-faint);
+    display: flex;
+    flex-wrap: wrap;
+    gap: .4rem 1.5rem;
+  }
+
+  @media print {
+    nav, footer { display: none; }
+    pre { white-space: pre-wrap; }
+  }
+</style>
+</head>
+<body>
+<nav class="site-nav" aria-label="Site">
+  <ul>
+    <li><a class="brand" href="../">v1.38 Docs</a></li>
+    <li><a href="../">Onboarding</a></li>
+    <li><a href="../present.html">Slides</a></li>
+    <li><a href="release-notes-walkthrough.html">Release notes: step by step</a></li>
+    <li><a href="release-notes.html" aria-current="page">Release notes: how it works</a></li>
+    <li><a href="reference-docs.html">Reference docs</a></li>
+  </ul>
+</nav>
+
+<div class="page">
+
+  <header class="masthead">
+    <div class="eyebrow">v1.38 Docs · Training</div>
+    <h1>Release notes generation — how it actually works</h1>
+  </header>
+
+  <main>
+<p>Written to answer the question the handbook doesn't: <em>why does
+this feel like a hassle, and what am I actually manipulating?</em> Five
+labs at the end run against the real, shipped v1.37 data on this
+machine. Do them before <code>alpha.1</code> on 23 Sep, because after
+that you're teaching it.</p>
+<hr />
+<h2 id="1-the-one-thing-that-makes-it-click">1. The one thing that makes
+it click</h2>
+<p><strong><code>release-notes-draft.md</code> and
+<code>release-notes-draft.json</code> are generated artifacts. They are
+outputs, not sources.</strong></p>
+<p>Almost every confusion about this tool dissolves once that lands. The
+source of truth is two things:</p>
+<ol type="1">
+<li>the <code>release-note</code> block in each merged PR on
+<code>kubernetes/kubernetes</code>, and</li>
+<li>the <strong>map files</strong> in
+<code>releases/release-1.XX/release-notes/maps/</code>.</li>
+</ol>
+<p><code>krel</code> reads both, applies the maps on top of the PR data,
+and regenerates the drafts from scratch.</p>
+<p>Here's the proof, from v1.37. Commit <a
+href="https://github.com/kubernetes/sig-release/commit/0de7449c"><code>0de7449c</code></a>
+changed <strong>four small map files</strong> — a handful of lines. The
+same commit shows:</p>
+<pre><code>maps/pr-139684-map.yaml       |    1 +
+maps/pr-140357-map.yaml       |    3 +-
+maps/pr-140651-map.yaml       |    2 +-
+maps/pr-140697-map.yaml       |    2 +-
+release-notes-draft.json      | 1522 ++++++-------
+release-notes-draft.md        |  434 +++---</code></pre>
+<p>Four lines of intent produced roughly 1,500 lines of JSON churn and
+430 of markdown. Nobody typed those. That's regeneration.</p>
+<h3 id="the-consequence-that-bites">The consequence that bites</h3>
+<blockquote>
+<p><strong>An edit you make directly to <code>.md</code> or
+<code>.json</code> is destroyed by the next regeneration. An edit you
+make in a map file survives.</strong></p>
+</blockquote>
+<p><code>rc.1</code> regenerates over <code>rc.0</code>. The final
+release regenerates over <code>rc.1</code>. So a hand-edit to the draft
+at <code>rc.0</code> silently vanishes nine days later, and the reviewer
+who made it has no idea. That is the mechanic behind the handbook's
+warning to "keep both files in sync" — but the deeper rule is better:
+<strong>fix it in the map.</strong></p>
+<p>The exception is the very end. Once the final tag is cut there is no
+further regeneration, so the Final Release Notes PR legitimately edits
+the drafts directly. And that's exactly what 1.37 did — commit
+<code>c8a60c77</code> touched 7 map files <em>and</em> both drafts
+together. Before the last tag: maps only.</p>
+<hr />
+<h2 id="2-the-pipeline">2. The pipeline</h2>
+<pre class="mermaid">flowchart TD
+    A["k/k merged PRs&lt;br/&gt;&lt;code&gt;release-note&lt;/code&gt; block in the PR body"] --&gt; C
+    B["&lt;code&gt;maps/pr-NNNNN-map.yaml&lt;/code&gt;&lt;br/&gt;per-PR field overrides"] --&gt; C
+    C["&lt;code&gt;krel release-notes&lt;/code&gt;&lt;br/&gt;gather → apply maps → render"]
+    C --&gt; D["&lt;code&gt;release-notes-draft.md&lt;/code&gt;&lt;br/&gt;human-readable, goes in the PR"]
+    C --&gt; E["&lt;code&gt;release-notes-draft.json&lt;/code&gt;&lt;br/&gt;drives relnotes.k8s.io + tooling"]
+    C --&gt; F["&lt;code&gt;sessions/maps-*.json&lt;/code&gt;&lt;br/&gt;who reviewed which PR, and at what commit hash"]
+    F -.-&gt;|"resume: skip already-reviewed"| C
+    D --&gt; G["PR to k/sig-release"]
+    E --&gt; G
+    B --&gt; G
+    F --&gt; G
+    G --&gt; H["&lt;code&gt;k/k&lt;/code&gt; CHANGELOG at release"]</pre>
+<p>Everything in that diagram except the first box lives in
+<code>kubernetes/sig-release</code>, which is why the release-notes PR
+always carries maps, sessions and both drafts together.</p>
+<hr />
+<h2 id="3-anatomy-of-a-map-file">3. Anatomy of a map file</h2>
+<p>One file per PR, named <code>pr-&lt;number&gt;-map.yaml</code>. Any
+field you set <strong>fully overrides</strong> its PR counterpart;
+anything you omit falls through to what GitHub reported.</p>
+<pre class="yaml"><code>pr: 140357                    # required — the only mandatory field besides releasenote
+releasenote:                  # required wrapper
+  text: |-                    # the note itself. |- keeps newlines, strips the trailing one
+    Updated the `kubectl explain` long description to fix formatting in the
+    generated documentation and improve consistency with other commands.
+  do_not_publish: false       # force a note INTO the draft — see the gotcha below
+  sigs:                       # replaces the PR&#39;s SIG list entirely
+  - cli
+  kinds:                      # API Change / Feature / Bug or Regression / Deprecation / Other
+  - documentation
+  areas:                      # optional, finer-grained tags
+  - kubectl
+  author: someone             # rarely needed
+  feature: false
+  action_required: false
+  release_version: 1.37.0
+  documentation:              # optional linked docs
+  - description: KEP
+    url: https://...
+pr_body: &quot;&quot;                   # krel writes this; blanking it keeps the file readable</code></pre>
+<p><strong>Multi-line text works</strong> and is used heavily — the
+largest v1.37 map (<code>pr-139870-map.yaml</code>) is a five-bullet
+markdown list inside one <code>text:</code> block, documenting every
+removed <code>cAdvisor</code> flag. Don't fight the tool trying to
+compress a genuinely complex note into one sentence.</p>
+<h3 id="the-do_not_publish-gotcha">The <code>do_not_publish</code>
+gotcha</h3>
+<p>Not mentioned anywhere in the Docs handbook, and 1.37 hit it. When a
+contributor's <code>release-note</code> block in the PR body is
+malformed, the note gets <strong>silently dropped</strong> from the
+draft. Setting</p>
+<pre class="yaml"><code>  do_not_publish: false</code></pre>
+<p>in a map forces it back in. Tushar's commit message for
+<code>0de7449c</code> says exactly this: <em>"Explicitly sets
+<code>do_not_publish</code> to false for pull requests where the
+original release-note block was mangled, ensuring they are included in
+the <code>.md</code> draft."</em></p>
+<p>So a note missing from the draft is not necessarily a note that
+doesn't exist. If you know a PR should have a note and can't find it,
+that's the first thing to check.</p>
+<p>The reverse, <code>do_not_publish: true</code>, hides a note. v1.38
+alpha.1 used it for a same-version Go update filed twice, and for two
+pairs of <code>resource.Quantity</code> PRs where a later PR undid the
+earlier one within the cycle, so users see no change. The map still
+needs <code>text</code>, and the PR description should say why each note
+is hidden.</p>
+<hr />
+<h2 id="4-where-the-state-lives">4. Where the state lives</h2>
+<pre><code>releases/release-1.38/release-notes/
+├── maps/                       # your edits. 350 files by the end of 1.37.
+│   └── pr-140357-map.yaml
+├── sessions/                   # review state. 5 files in 1.37 — one per --fix session.
+│   └── maps-1781290561.json
+├── release-notes-draft.md      # generated. 124 KB in 1.37.
+└── release-notes-draft.json    # generated. 392 KB in 1.37.</code></pre>
+<p>A session file is small and readable:</p>
+<pre class="json"><code>{
+  &quot;mail&quot;: &quot;&lt;the git email of whoever ran it&gt;&quot;,
+  &quot;name&quot;: &quot;&lt;their git name&gt;&quot;,
+  &quot;date&quot;: 1781290561,
+  &quot;prs&quot;: [ { &quot;nr&quot;: 137116, &quot;hash&quot;: &quot;bec86a4b0aa4eb...&quot; }, ... ]
+}</code></pre>
+<p>That <code>hash</code> is the mechanic behind two behaviours worth
+knowing:</p>
+<ul>
+<li><strong>Resume.</strong> Answer <code>y</code> to "continue from the
+last session?" and krel skips every PR already in a session file. This
+is why the rotation works — each person only reviews what arrived since
+the last run.</li>
+<li><strong>Change detection.</strong> If an author or admin edits the
+<code>release-note</code> block after you reviewed it, the hash no
+longer matches, and krel re-presents the note flagged <em>"✨ Note
+contents are modified with a map"</em>. You don't have to police edits
+manually.</li>
+</ul>
+<p>Sessions are per-person and get committed. That's deliberate — it's
+the audit trail of who reviewed what.</p>
+<hr />
+<h2 id="5-the-commands-you-actually-need">5. The commands you actually
+need</h2>
+<p>Set the token once per shell. <code>gh</code> is already
+authenticated here, so:</p>
+<pre class="bash"><code>export GITHUB_TOKEN=$(gh auth token)
+export PATH=$PATH:$(go env GOPATH)/bin</code></pre>
+<h3 id="--repo-use-a-clean-worktree"><code>--repo</code>: use a clean
+worktree</h3>
+<p><strong>You can run krel from any directory.</strong> It reads
+<code>k/k</code> from <code>--repo</code> (default
+<code>$TMPDIR/k8s</code>) and clones <code>k/sig-release</code> to its
+own temp dir, pushes the branch to your fork, and deletes it. There's no
+flag to relocate the sig-release clone.</p>
+<p>The default location is fragile. v1.38 alpha.1 hit both of these:</p>
+<ul>
+<li>macOS deletes old files under <code>$TMPDIR</code>. Between cuts,
+<code>$TMPDIR/k8s</code> was left as empty folders, and krel failed with
+<em>"opening repo: repository does not exist"</em>.</li>
+<li>Re-cloning pulls about 1.8 million objects. GitHub dropped the
+connection partway through (<em>"http2: server sent GOAWAY"</em>), and
+krel can't resume a clone.</li>
+</ul>
+<p>Pointing <code>--repo</code> at your own working clone doesn't work
+either. On the <code>--create-draft-pr</code> path, krel <strong>ignores
+<code>--update-repo=false</code></strong> and always runs
+<code>git pull --rebase</code> in <code>--repo</code>: the gatherer
+builds fresh options with <code>Pull: true</code>. A checkout with
+uncommitted changes fails with <em>"cannot pull with rebase: You have
+unstaged changes"</em>. <code>--update-repo=false</code> is only
+honoured by plain generate runs, such as Lab 5.</p>
+<p>So give krel a worktree of your existing clone. It shares the
+objects, so nothing large downloads, and it's never dirty:</p>
+<pre class="bash"><code>export KK=/Users/caesarsage/Documents/open-source-projects/kubernete/k8s.io/kubernetes
+git -C $KK fetch upstream
+git -C $KK worktree add ~/src/k8s-krel -b krel-master upstream/master</code></pre>
+<p><code>krel-master</code> tracks <code>upstream/master</code>, so
+krel's <code>git pull --rebase</code> updates it from <code>k/k</code>,
+not your fork. Keep the worktree for every cut.</p>
+<h3 id="four-invocations-by-purpose">Four invocations, by purpose</h3>
+<pre class="bash"><code># 1. Validate maps. No API calls, no clone, ~0.3s over 350 files. Run before every push.
+krel release-notes validate --path-to-release-notes ./maps
+
+# 2. Generate only — see what the notes look like, change nothing.
+krel release-notes --tag=v1.38.0-alpha.1
+
+# 3. Generate with the team&#39;s existing overrides applied.
+#    -m needs an ABSOLUTE path; krel runs from its own temp clone.
+krel release-notes --tag=v1.38.0-alpha.1 -m /abs/path/to/release-notes/maps
+
+# 4. The real weekly flow: interactive review + draft PR.
+krel release-notes --create-draft-pr --fix \
+  --tag=v1.38.0-alpha.1 --fork=Caesarsage --repo ~/src/k8s-krel --nomock
+
+# 5. After krel opens the PR: bring the maps into the team layout, then re-validate.
+python3 normalize_maps.py releases/release-1.38/release-notes</code></pre>
+<p>Invocation 4 only saves the map lines you uncomment, and copies each
+PR's body into <code>pr_body</code>. <a
+href="normalize_maps.py"><code>normalize_maps.py</code></a> fills
+<code>sigs</code>, <code>kinds</code> and <code>areas</code> from the
+draft JSON and blanks <code>pr_body</code>, matching the v1.37 maps. See
+Step 8 of the <a
+href="release-notes-walkthrough.html">walkthrough</a>.</p>
+<p><code>--fix</code> only works alongside
+<code>--create-draft-pr</code>. <code>--org</code> and
+<code>--fork</code> are your GitHub user, because krel pushes a branch
+to <em>your</em> fork of <code>k/sig-release</code> and opens the PR
+from there.</p>
+<p>Add <code>--log-level=debug</code> (or <code>trace</code>) when
+something is wrong. The gatherer hits the GitHub API hard and
+<strong>you will get rate limited</strong> — krel handles it, but
+back-to-back runs mean waiting. Budget one real run per sitting.</p>
+<hr />
+<h2 id="6-labs">6. Labs</h2>
+<p>All against the shipped v1.37 data in this repo. Labs 1–4 are
+read-only or scratch-only and cost nothing. Work in a scratch dir:</p>
+<pre class="bash"><code>export LAB=/Users/caesarsage/Documents/open-source-projects/kubernete/k8s.io/docs-team/v1.38/training/lab
+export RN=/Users/caesarsage/Documents/open-source-projects/kubernete/k8s.io/sig-release/releases/release-1.37/release-notes
+mkdir -p $LAB</code></pre>
+<h3 id="lab-1--the-pre-flight-nobody-runs">Lab 1 · The pre-flight nobody
+runs</h3>
+<pre class="bash"><code>cd $RN &amp;&amp; time krel release-notes validate --path-to-release-notes ./maps</code></pre>
+<p><strong>Expect:</strong> <code>All release notes are valid.</code> in
+about a third of a second, over 350 files.</p>
+<p><strong>The point:</strong> this is free, instant, needs no token and
+no clone — and it's the check that would have prevented <a
+href="https://github.com/kubernetes/sig-release/pull/2446"><code>sig-release#2446</code></a>,
+where one invalid YAML map blocked the entire
+<code>v1.30.0-alpha.3</code> release until a separate PR unblocked it.
+Wire it into your own habit now; the CI workflow
+(<code>krel-release-notes-validate.yaml</code>) only fires on push,
+which is already too late to save you a round trip.</p>
+<h3 id="lab-2--prove-that-maps-win">Lab 2 · Prove that maps win</h3>
+<p>Read the map, then find its text in the generated output:</p>
+<pre class="bash"><code>cat $RN/maps/pr-140357-map.yaml
+grep -o &quot;Updated the \`kubectl explain\` long description[^(]*&quot; $RN/release-notes-draft.md</code></pre>
+<p><strong>Expect:</strong> the map's <code>text:</code> appears in the
+<code>.md</code> <strong>verbatim</strong> — including the phrase "to
+fix formatting in the generated documentation", which was the map's
+edit. The original PR said something different.</p>
+<p><strong>The point:</strong> you've now watched the override happen.
+The <code>.md</code> is downstream.</p>
+<h3 id="lab-3--break-it-then-catch-it">Lab 3 · Break it, then catch
+it</h3>
+<pre class="bash"><code>cp -r $RN/maps $LAB/maps-broken
+printf &#39;\n  bad_indent:\n- oops\n&#39; &gt;&gt; $LAB/maps-broken/pr-140357-map.yaml
+krel release-notes validate --path-to-release-notes $LAB/maps-broken</code></pre>
+<p><strong>Expect:</strong> a fatal error naming the file <em>and the
+line</em>:</p>
+<pre><code>level=fatal msg=&quot;validating release notes: validating YAML file .../pr-140357-map.yaml:
+YAML unmarshaling ...: error converting YAML to JSON: yaml: line 13: did not find expected key&quot;</code></pre>
+<p><strong>The point:</strong> the failure is legible and local — file
+plus line number. This is a ten-second loop, and it's the loop to use
+when hand-authoring maps in bulk. Clean up with
+<code>rm -rf $LAB/maps-broken</code>.</p>
+<h3 id="lab-4--judgement-then-authoring">Lab 4 · Judgement, then
+authoring</h3>
+<p><strong>Part A — is this a violation?</strong></p>
+<pre class="bash"><code>grep -n &#39;`PodGroup`&#39; $RN/release-notes-draft.md</code></pre>
+<p>You get one hit (line 148):</p>
+<blockquote>
+<p>Added the <code>PodGroup</code> field to the
+<code>PodGroupInfo</code> object in <code>kube-scheduler</code> to
+enable plugins to obtain a consistent state throughout the scheduling
+cycle.</p>
+</blockquote>
+<p>The style rule says API kinds are <strong>bare PascalCase</strong>,
+never backticked. PodGroup <em>is</em> an API kind. So — violation?</p>
+<p><strong>No.</strong> Here <code>PodGroup</code> is the name of a
+<strong>field</strong>, and field names <em>are</em> backticked. The
+rule keys off the role the word plays in the sentence, not the word
+itself. The same token is bare as a kind and backticked as a field, and
+a single sentence often needs both:</p>
+<blockquote>
+<p>the ResourceClaim <code>status.reservedFor</code> field</p>
+</blockquote>
+<p>This distinction is where most release-notes review time goes, and
+getting it wrong in either direction generates noise for authors. Read
+the sentence, not the word.</p>
+<p><strong>Part B — author a map by hand.</strong></p>
+<p>The shipped v1.37 notes actually survive every mechanical check I
+could throw at them: no backticked kinds in kind position, no all-caps
+<code>ALPHA</code>/<code>BETA</code>, no lowercase graduation phases, no
+notes missing terminal punctuation. That's evidence the map workflow
+works — and it's your benchmark for 1.38.</p>
+<p>So rather than hunt for a bug, practise the authoring. Take the real
+note above and rewrite it as if you'd decided it was too vague:</p>
+<pre class="bash"><code>mkdir -p $LAB/maps-mine
+cat &gt; $LAB/maps-mine/pr-140075-map.yaml &lt;&lt;&#39;YAML&#39;
+pr: 140075
+releasenote:
+  text: |-
+    Added the `PodGroup` field to the `PodGroupInfo` object in `kube-scheduler`, so that
+    scheduling plugins observe a consistent PodGroup state for the whole scheduling cycle.
+  sigs:
+  - scheduling
+  kinds:
+  - feature
+pr_body: &quot;&quot;
+YAML
+krel release-notes validate --path-to-release-notes $LAB/maps-mine</code></pre>
+<p>Note the mixed usage in that text —
+<code><code>PodGroup</code></code> backticked as the field, PodGroup
+bare as the kind. That's the rule from Part A, applied.</p>
+<p><strong>The point:</strong> this is the entire skill. Everything the
+interactive <code>--fix</code> loop does is write a file like this one.
+Once you can author it by hand, the interactive flow becomes a
+convenience rather than a dependency — and you can batch twenty style
+fixes in a text editor instead of clicking through twenty prompts.</p>
+<h3 id="lab-5--capstone--regenerate-137-and-see-the-teams-work">Lab 5 ·
+Capstone — regenerate 1.37 and see the team's work</h3>
+<p>This one costs API calls. Do it once, with a fresh rate-limit
+budget.</p>
+<pre class="bash"><code>export KK=/Users/caesarsage/Documents/open-source-projects/kubernete/k8s.io/kubernetes
+export GITHUB_TOKEN=$(gh auth token)
+
+# Run A — raw PR data, no overrides
+krel release-notes --tag=v1.37.0-alpha.1 --repo=$KK --update-repo=false 2&gt;&amp;1 | tee $LAB/run-a.log
+
+# Run B — same tag, with the team&#39;s 350 maps applied
+krel release-notes --tag=v1.37.0-alpha.1 --repo=$KK --update-repo=false -m $RN/maps 2&gt;&amp;1 | tee $LAB/run-b.log</code></pre>
+<p>krel prints the path it wrote the draft to
+(<code>Release Notes Draft written to /tmp/k8s-.../...</code>). Grab
+both paths out of the logs and diff them:</p>
+<pre class="bash"><code>diff &lt;(cat &lt;run-A-draft&gt;) &lt;(cat &lt;run-B-draft&gt;) | head -60</code></pre>
+<p><strong>Expect:</strong> the diff <em>is</em> the editing work —
+every rewritten sentence, every corrected SIG and kind, every forced-in
+note. For alpha.1 the maps that apply are only the early ones, so it'll
+be a modest diff; that's fine, it's the mechanism you're confirming.</p>
+<p><strong>The point:</strong> you now know, concretely, what four
+months of a Docs team's release-notes effort consists of. When a shadow
+asks "what am I actually doing when I run <code>--fix</code>", this diff
+is the answer.</p>
+<p><strong>If it goes wrong:</strong></p>
+<ul>
+<li>Rate limited → wait, or run with <code>--log-level=debug</code> to
+see the backoff.</li>
+<li>Stale temp state → <code>rm -rf /var/folders/60/*/T/k8s</code> (only
+if you <em>didn't</em> pass <code>--repo</code>).</li>
+<li>Tag not found → <code>git -C $KK fetch upstream --tags</code>.</li>
+</ul>
+<hr />
+<h2 id="7-failure-modes">7. Failure modes</h2>
+<div class="scroll">
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>An edit to the draft disappeared</td>
+<td>Hand-edited <code>.md</code>/<code>.json</code>; the next tag
+regenerated over it</td>
+<td>Put it in a map instead. Only edit drafts directly after the final
+tag.</td>
+</tr>
+<tr>
+<td>A note you know exists isn't in the draft</td>
+<td>Malformed <code>release-note</code> block in the PR body</td>
+<td><code>do_not_publish: false</code> in a map</td>
+</tr>
+<tr>
+<td><code>.md</code> and <code>.json</code> disagree</td>
+<td>Someone edited one and not the other</td>
+<td>Regenerate, or edit both — but prefer the map</td>
+</tr>
+<tr>
+<td>Whole release blocked on release notes</td>
+<td>One invalid YAML map merged</td>
+<td><code>krel release-notes validate</code> before every push. See
+<code>sig-release#2446</code></td>
+</tr>
+<tr>
+<td>PRs missing from an rc's notes</td>
+<td>krel can skip PRs during rc fast-forward syncs — <a
+href="https://github.com/kubernetes/release/issues/4381"><code>k/release#4381</code></a></td>
+<td>Cross-check the note count against <code>k/k</code> merges since the
+previous tag</td>
+</tr>
+<tr>
+<td><em>"opening repo: repository does not exist"</em></td>
+<td>macOS emptied <code>$TMPDIR/k8s</code> between cuts</td>
+<td>Use the <code>--repo</code> worktree (§5)</td>
+</tr>
+<tr>
+<td><em>"unable to clone repo: http2: server sent GOAWAY"</em></td>
+<td>GitHub dropped the 1.8M-object clone</td>
+<td>Use the <code>--repo</code> worktree; it needs no clone</td>
+</tr>
+<tr>
+<td><em>"cannot pull with rebase: You have unstaged changes"</em></td>
+<td><code>--repo</code> points at a dirty checkout;
+<code>--update-repo=false</code> is ignored with
+<code>--create-draft-pr</code></td>
+<td>Use the <code>--repo</code> worktree</td>
+</tr>
+<tr>
+<td>Map re-indented or broken after saving</td>
+<td>Editor format-on-save (Prettier)</td>
+<td><code>Cmd+K S</code>, or auto-save; turn off format-on-save for
+YAML</td>
+</tr>
+<tr>
+<td>Map fails to parse on a note with <code>ACTION REQUIRED:</code> or
+<code>field: {}</code></td>
+<td>YAML reads <code>: </code> as a key, even in backticks</td>
+<td>Wrap the text in double quotes</td>
+</tr>
+<tr>
+<td>Maps have only <code>text</code>, and a huge
+<code>pr_body</code></td>
+<td><code>--fix</code> saves only uncommented lines, and krel copies the
+PR body</td>
+<td>Run <code>normalize_maps.py</code> on the PR branch</td>
+</tr>
+<tr>
+<td>A note has no SIG</td>
+<td>The PR has no <code>sig/</code> label, only for example
+<code>wg/</code></td>
+<td>Set <code>sigs</code> in the map; ask the author to add the
+label</td>
+</tr>
+<tr>
+<td>"The yaml code does not have a PR number"</td>
+<td>Map missing <code>pr:</code> or <code>releasenote:</code></td>
+<td>Both are mandatory; uncomment them</td>
+</tr>
+<tr>
+<td>Note re-presented as "modified"</td>
+<td>Author changed the PR's note after you reviewed it</td>
+<td>Expected. Re-review it; the session hash caught the change.</td>
+</tr>
+<tr>
+<td>Rate limited mid-run</td>
+<td>The gatherer hammers the API</td>
+<td>Budget one real run per sitting</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr />
+<h2 id="8-the-weekly-routine--what-a-shadow-does">8. The weekly routine
+— what a shadow does</h2>
+<p>Per the responsibility sheet, one assignee and one reviewer per
+tag.</p>
+<p><strong>Assignee</strong></p>
+<ol type="1">
+<li><code>git -C $KK fetch upstream --tags</code></li>
+<li><code>krel release-notes --create-draft-pr --fix --tag=&lt;tag&gt; --fork=&lt;you&gt; --repo ~/src/k8s-krel --nomock</code></li>
+<li>Answer <code>Y</code> to <em>"continue from the last session?"</em>,
+so you only see notes since the last tag.</li>
+<li>Review each note against the <a
+href="https://github.com/kernel-kun/release-team-utils/blob/main/release-notes-style-guide.md">style
+cheatsheet</a>. Edit the ones that need it — that writes maps.</li>
+<li><code>Ctrl+C</code> when you're through the queue, or when you're
+out of time. It resumes.</li>
+<li>Let krel create the PR.</li>
+<li>On the PR branch: <code>normalize_maps.py</code>, then
+<code>krel release-notes validate</code>, then commit and push.</li>
+<li>Write the description (walkthrough Step 9), then post the link in
+<code>#release-notes</code> and the team group.</li>
+</ol>
+<p><strong>Reviewer</strong></p>
+<ol type="1">
+<li>Confirm every PR merged since the last tag was processed — a missing
+note goes to the lead immediately.</li>
+<li>Read the <code>.md</code> diff properly. Strict on the style
+guide.</li>
+<li>Check the SIG on each note is right. <code>ACTION_REQUIRED</code>
+placement is high-stakes — consult the SIG if unsure.</li>
+<li>On re-review, confirm <code>.md</code>, <code>.json</code> and the
+maps all agree.</li>
+</ol>
+<p><strong>Merge deadline is two days after the tag.</strong> A late
+notes PR blocks the next generation.</p>
+<hr />
+<h2 id="9-the-final-review--lead-only">9. The final review — lead
+only</h2>
+<p>Weeks 14–16, and the hardest deadline in the cycle. Full steps are in
+<code>CHECKLIST.md</code>; the mechanics that matter here:</p>
+<ul>
+<li>Open the PR at <strong>rc.0 (Thu 3 Dec)</strong>, branch
+<code>Caesarsage/v1.38-final-release-notes-review</code>.</li>
+<li>Post the <code>#chairs-and-techleads</code> request the same day.
+SIGs need to find their own notes, and that can't be compressed into 48
+hours — 1.35 and 1.36 both merged after the cut by trying.</li>
+<li><code>rc.1</code> lands <strong>9 Dec</strong> and regenerates. Plan
+for it: get the bulk of the review done before it, so you're only
+folding in rc.1's new notes rather than re-reading everything.</li>
+<li>Edit <code>.md</code> and <code>.json</code> together, and keep any
+content fix in a map where a regeneration could still hit it.</li>
+<li><strong>Merged by Mon 14 Dec (AoE)</strong>, ≥24h before the cut.
+Past that, <code>k/k</code> ships a stale CHANGELOG and it cannot be
+fixed after the fact.</li>
+</ul>
+<hr />
+<h2 id="10-explaining-it-to-a-shadow-in-two-minutes">10. Explaining it
+to a shadow in two minutes</h2>
+<blockquote>
+<p>The drafts are generated. Every time we cut a tag, krel re-reads
+every merged PR's release-note block and rebuilds both draft files from
+scratch. So if you fix a typo in the markdown, the next release cut
+throws your fix away.</p>
+<p>What survives is a <strong>map file</strong> — a tiny YAML per PR
+that overrides whatever GitHub said. The interactive <code>--fix</code>
+tool is just a wizard for writing those files. That's the whole system:
+PR data plus map files in, drafts out.</p>
+<p>So the rule is: never edit the draft, always edit the map. And run
+<code>krel release-notes validate</code> before you push — it takes a
+third of a second and it's the one thing that stops a bad map from
+blocking the entire release.</p>
+</blockquote>
+<hr />
+<h2 id="sources">Sources</h2>
+<ul>
+<li><a
+href="https://github.com/kubernetes/release/blob/master/docs/krel/release-notes.md"><code>krel release-notes</code>
+docs</a> · <a
+href="https://github.com/kubernetes/release/blob/master/docs/release-notes-maps.md">map
+file format</a></li>
+<li><a
+href="https://github.com/kubernetes/sig-release/blob/master/release-team/role-handbooks/docs/editing-flow.md">editing-flow.md</a>
+— the interactive loop, screen by screen</li>
+<li><a
+href="https://github.com/kernel-kun/release-team-utils/blob/main/release-notes-style-guide.md">Release
+notes style cheatsheet</a> — the rules reviewers apply</li>
+<li><a
+href="https://github.com/kubernetes/sig-release/pull/3050">sig-release#3050</a>
+(v1.37 alpha.1) and <a
+href="https://github.com/kubernetes/sig-release/pull/3116">#3116</a>
+(v1.38 alpha.1) — map layout and PR description to copy</li>
+<li><a href="https://www.youtube.com/watch?v=n62oPohOyYs">Lightning
+Talk: Kubernetes Release Notes Tips &amp; Tricks</a></li>
+<li>v1.37 commits worth reading as worked examples:
+<code>0de7449c</code> (publish flags + kinds), <code>86aa4629</code>
+(your own style overrides), <code>c8a60c77</code> (final review),
+<code>d91fd91c</code> (adding missing notes)</li>
+</ul>
+  </main>
+
+  <footer>
+    <span>Kubernetes v1.38 · SIG Release · Docs Subteam</span>
+    <span>Maintained by @Caesarsage</span>
+  </footer>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11.4.1/dist/mermaid.min.js"></script>
+<script>
+  if (window.mermaid && document.querySelector("pre.mermaid")) {
+    var dark = document.documentElement.dataset.theme === "dark" ||
+      (!document.documentElement.dataset.theme && matchMedia("(prefers-color-scheme: dark)").matches);
+    mermaid.initialize({ startOnLoad: true, theme: dark ? "dark" : "neutral" });
+  }
+</script>
+</body>
+</html>

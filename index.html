@@ -579,9 +579,49 @@
     a { color: #000; }
     * { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
   }
+
+  /* ---------- site nav (shared with training pages) ---------- */
+
+  .site-nav {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--ground);
+    border-bottom: 1px solid var(--rule);
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+  .site-nav ul {
+    list-style: none;
+    max-width: 61rem;
+    margin: 0 auto;
+    padding: .7rem 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: .35rem 1.3rem;
+    font-family: var(--f-mono);
+    font-size: .74rem;
+  }
+  .site-nav li:first-child { margin-right: auto; }
+  .site-nav a { color: var(--ink-soft); text-decoration: none; }
+  .site-nav a:hover { color: var(--accent); }
+  .site-nav a[aria-current="page"] { color: var(--accent); font-weight: 700; }
+  .site-nav .brand { color: var(--ink); font-weight: 700; }
+  @media print { .site-nav { display: none; } }
 </style>
 </head>
 <body>
+
+<nav class="site-nav" aria-label="Site">
+  <ul>
+    <li><a class="brand" href="./">v1.38 Docs</a></li>
+    <li><a href="./" aria-current="page">Onboarding</a></li>
+    <li><a href="present.html">Slides</a></li>
+    <li><a href="training/release-notes-walkthrough.html">Release notes: step by step</a></li>
+    <li><a href="training/release-notes.html">Release notes: how it works</a></li>
+    <li><a href="training/reference-docs.html">Reference docs</a></li>
+  </ul>
+</nav>
 
 <div class="page">
 
@@ -1233,6 +1273,14 @@
             <li><a href="https://github.com/orgs/kubernetes/projects/264/views/3">v1.38 Release Tracking board, Docs view</a></li>
             <li>Templates T1–T17 — <span class="fill">link TBC</span></li>
             <li>Release notes style cheatsheet — <span class="fill">link TBC</span></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Training</h4>
+          <ul>
+            <li><a href="training/release-notes-walkthrough.html">Release notes, step by step</a></li>
+            <li><a href="training/release-notes.html">Release notes, how it works</a> — with labs</li>
+            <li><a href="training/reference-docs.html">Reference docs generation</a></li>
           </ul>
         </div>
       </div>

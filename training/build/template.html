@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>$pagetitle$ · v1.38 Docs Training</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<style>
+  :root {
+    color-scheme: light;
+    --ground: #ffffff;
+    --surface-sunk: #f4f4f5;
+    --ink: #18181b;
+    --ink-soft: #52525b;
+    --ink-faint: #78787f;
+    --rule: #e0e0e4;
+    --rule-soft: #ededf0;
+    --accent: #2563c9;
+
+    --f-display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+    --f-body: "Source Serif 4", Georgia, "Times New Roman", serif;
+    --f-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+    --measure: 72ch;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --ground: #0f0f11;
+      --surface-sunk: #1e1e23;
+      --ink: #f2f2f4;
+      --ink-soft: #a6a6ae;
+      --ink-faint: #86868f;
+      --rule: #2c2c33;
+      --rule-soft: #232329;
+      --accent: #7ea8f5;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --ground: #0f0f11;
+    --surface-sunk: #1e1e23;
+    --ink: #f2f2f4;
+    --ink-soft: #a6a6ae;
+    --ink-faint: #86868f;
+    --rule: #2c2c33;
+    --rule-soft: #232329;
+    --accent: #7ea8f5;
+  }
+
+  * { box-sizing: border-box; }
+  img { max-width: 100%; }
+
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--f-body);
+    font-size: 1rem;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page { max-width: 52rem; margin: 0 auto; padding: 0 1.5rem 6rem; }
+
+  /* ---------- site nav (shared with the deck) + masthead ---------- */
+
+  .site-nav {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--ground);
+    border-bottom: 1px solid var(--rule);
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+  .site-nav ul {
+    list-style: none;
+    max-width: 61rem;
+    margin: 0 auto;
+    padding: .7rem 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: .35rem 1.3rem;
+    font-family: var(--f-mono);
+    font-size: .74rem;
+  }
+  .site-nav li:first-child { margin-right: auto; }
+  .site-nav a { color: var(--ink-soft); text-decoration: none; }
+  .site-nav a:hover { color: var(--accent); }
+  .site-nav a[aria-current="page"] { color: var(--accent); font-weight: 700; }
+  .site-nav .brand { color: var(--ink); font-weight: 700; }
+  h2[id], h3[id] { scroll-margin-top: 4rem; }
+
+  .masthead { padding: 3.5rem 0 2rem; border-bottom: 2px solid var(--ink); margin-bottom: 2.5rem; }
+  .eyebrow {
+    font-family: var(--f-mono);
+    font-size: .7rem;
+    font-weight: 500;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+  .masthead h1 {
+    font-family: var(--f-display);
+    font-weight: 700;
+    font-size: clamp(2rem, 5vw, 3rem);
+    line-height: 1.05;
+    letter-spacing: -.025em;
+    margin: .7rem 0 0;
+    text-wrap: balance;
+  }
+
+  /* ---------- prose ---------- */
+
+  main > p, main > ul, main > ol, main > blockquote, main > .note { max-width: var(--measure); }
+  main p { margin: 0 0 .95rem; }
+  main ul, main ol { margin: 0 0 1rem; padding-left: 1.25rem; }
+  main li { margin-bottom: .4rem; }
+  main li > ul { margin: .4rem 0 0; }
+
+  h2 {
+    font-family: var(--f-display);
+    font-weight: 600;
+    font-size: 1.6rem;
+    line-height: 1.15;
+    letter-spacing: -.018em;
+    margin: 3rem 0 .85rem;
+    text-wrap: balance;
+  }
+  h3 {
+    font-family: var(--f-display);
+    font-weight: 600;
+    font-size: 1.1rem;
+    letter-spacing: -.005em;
+    margin: 2.2rem 0 .6rem;
+  }
+  h4 {
+    font-family: var(--f-display);
+    font-weight: 600;
+    font-size: .98rem;
+    margin: 1.8rem 0 .5rem;
+  }
+  hr { border: 0; border-top: 1px solid var(--rule-soft); margin: 3rem 0 0; }
+  hr + h2 { margin-top: 2.5rem; }
+
+  a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: .16em; }
+  a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
+  strong { font-weight: 600; }
+
+  code, pre {
+    font-variant-ligatures: none;
+  }
+  code {
+    font-family: var(--f-mono);
+    font-size: .855em;
+    background: var(--surface-sunk);
+    padding: .08em .34em;
+    border-radius: 3px;
+  }
+  pre {
+    font-family: var(--f-mono);
+    font-size: .8rem;
+    line-height: 1.55;
+    background: var(--surface-sunk);
+    border: 1px solid var(--rule-soft);
+    border-radius: 5px;
+    padding: .9rem 1.1rem;
+    margin: 0 0 1.2rem;
+    overflow-x: auto;
+  }
+  pre code { background: none; padding: 0; font-size: inherit; }
+  pre.mermaid { background: none; border: 0; padding: 0; text-align: center; }
+
+  blockquote {
+    background: var(--surface-sunk);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 5px 5px 0;
+    padding: 1rem 1.2rem;
+    margin: 0 0 1.3rem;
+    font-size: .96rem;
+  }
+  blockquote > :last-child { margin-bottom: 0; }
+
+  ul.task-list { list-style: none; padding-left: .2rem; }
+  ul.task-list input { margin: 0 .5rem 0 0; }
+
+  /* ---------- tables ---------- */
+
+  .scroll { overflow-x: auto; margin: 0 0 1.4rem; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--f-display);
+    font-size: .855rem;
+    font-variant-numeric: tabular-nums;
+  }
+  th {
+    text-align: left;
+    font-weight: 600;
+    font-size: .66rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    padding: 0 1rem .5rem 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  td {
+    padding: .6rem 1rem .6rem 0;
+    border-bottom: 1px solid var(--rule-soft);
+    vertical-align: top;
+  }
+  td:last-child, th:last-child { padding-right: 0; }
+
+  footer {
+    margin-top: 4rem;
+    padding-top: 1.5rem;
+    border-top: 2px solid var(--ink);
+    font-family: var(--f-mono);
+    font-size: .74rem;
+    color: var(--ink-faint);
+    display: flex;
+    flex-wrap: wrap;
+    gap: .4rem 1.5rem;
+  }
+
+  @media print {
+    nav, footer { display: none; }
+    pre { white-space: pre-wrap; }
+  }
+</style>
+</head>
+<body>
+<nav class="site-nav" aria-label="Site">
+  <ul>
+    <li><a class="brand" href="../">v1.38 Docs</a></li>
+    <li><a href="../">Onboarding</a></li>
+    <li><a href="../present.html">Slides</a></li>
+    <li><a href="release-notes-walkthrough.html"$if(page-release-notes-walkthrough)$ aria-current="page"$endif$>Release notes: step by step</a></li>
+    <li><a href="release-notes.html"$if(page-release-notes)$ aria-current="page"$endif$>Release notes: how it works</a></li>
+    <li><a href="reference-docs.html"$if(page-reference-docs)$ aria-current="page"$endif$>Reference docs</a></li>
+  </ul>
+</nav>
+
+<div class="page">
+
+  <header class="masthead">
+    <div class="eyebrow">v1.38 Docs · Training</div>
+    <h1>$title$</h1>
+  </header>
+
+  <main>
+$body$
+  </main>
+
+  <footer>
+    <span>Kubernetes v1.38 · SIG Release · Docs Subteam</span>
+    <span>Maintained by @Caesarsage</span>
+  </footer>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11.4.1/dist/mermaid.min.js"></script>
+<script>
+  if (window.mermaid && document.querySelector("pre.mermaid")) {
+    var dark = document.documentElement.dataset.theme === "dark" ||
+      (!document.documentElement.dataset.theme && matchMedia("(prefers-color-scheme: dark)").matches);
+    mermaid.initialize({ startOnLoad: true, theme: dark ? "dark" : "neutral" });
+  }
+</script>
+</body>
+</html>

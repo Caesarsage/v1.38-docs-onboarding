@@ -1,0 +1,758 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Running release notes — step by step · v1.38 Docs Training</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<style>
+  :root {
+    color-scheme: light;
+    --ground: #ffffff;
+    --surface-sunk: #f4f4f5;
+    --ink: #18181b;
+    --ink-soft: #52525b;
+    --ink-faint: #78787f;
+    --rule: #e0e0e4;
+    --rule-soft: #ededf0;
+    --accent: #2563c9;
+
+    --f-display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+    --f-body: "Source Serif 4", Georgia, "Times New Roman", serif;
+    --f-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+    --measure: 72ch;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --ground: #0f0f11;
+      --surface-sunk: #1e1e23;
+      --ink: #f2f2f4;
+      --ink-soft: #a6a6ae;
+      --ink-faint: #86868f;
+      --rule: #2c2c33;
+      --rule-soft: #232329;
+      --accent: #7ea8f5;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --ground: #0f0f11;
+    --surface-sunk: #1e1e23;
+    --ink: #f2f2f4;
+    --ink-soft: #a6a6ae;
+    --ink-faint: #86868f;
+    --rule: #2c2c33;
+    --rule-soft: #232329;
+    --accent: #7ea8f5;
+  }
+
+  * { box-sizing: border-box; }
+  img { max-width: 100%; }
+
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--f-body);
+    font-size: 1rem;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page { max-width: 52rem; margin: 0 auto; padding: 0 1.5rem 6rem; }
+
+  /* ---------- site nav (shared with the deck) + masthead ---------- */
+
+  .site-nav {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--ground);
+    border-bottom: 1px solid var(--rule);
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+  .site-nav ul {
+    list-style: none;
+    max-width: 61rem;
+    margin: 0 auto;
+    padding: .7rem 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: .35rem 1.3rem;
+    font-family: var(--f-mono);
+    font-size: .74rem;
+  }
+  .site-nav li:first-child { margin-right: auto; }
+  .site-nav a { color: var(--ink-soft); text-decoration: none; }
+  .site-nav a:hover { color: var(--accent); }
+  .site-nav a[aria-current="page"] { color: var(--accent); font-weight: 700; }
+  .site-nav .brand { color: var(--ink); font-weight: 700; }
+  h2[id], h3[id] { scroll-margin-top: 4rem; }
+
+  .masthead { padding: 3.5rem 0 2rem; border-bottom: 2px solid var(--ink); margin-bottom: 2.5rem; }
+  .eyebrow {
+    font-family: var(--f-mono);
+    font-size: .7rem;
+    font-weight: 500;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+  .masthead h1 {
+    font-family: var(--f-display);
+    font-weight: 700;
+    font-size: clamp(2rem, 5vw, 3rem);
+    line-height: 1.05;
+    letter-spacing: -.025em;
+    margin: .7rem 0 0;
+    text-wrap: balance;
+  }
+
+  /* ---------- prose ---------- */
+
+  main > p, main > ul, main > ol, main > blockquote, main > .note { max-width: var(--measure); }
+  main p { margin: 0 0 .95rem; }
+  main ul, main ol { margin: 0 0 1rem; padding-left: 1.25rem; }
+  main li { margin-bottom: .4rem; }
+  main li > ul { margin: .4rem 0 0; }
+
+  h2 {
+    font-family: var(--f-display);
+    font-weight: 600;
+    font-size: 1.6rem;
+    line-height: 1.15;
+    letter-spacing: -.018em;
+    margin: 3rem 0 .85rem;
+    text-wrap: balance;
+  }
+  h3 {
+    font-family: var(--f-display);
+    font-weight: 600;
+    font-size: 1.1rem;
+    letter-spacing: -.005em;
+    margin: 2.2rem 0 .6rem;
+  }
+  h4 {
+    font-family: var(--f-display);
+    font-weight: 600;
+    font-size: .98rem;
+    margin: 1.8rem 0 .5rem;
+  }
+  hr { border: 0; border-top: 1px solid var(--rule-soft); margin: 3rem 0 0; }
+  hr + h2 { margin-top: 2.5rem; }
+
+  a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: .16em; }
+  a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
+  strong { font-weight: 600; }
+
+  code, pre {
+    font-variant-ligatures: none;
+  }
+  code {
+    font-family: var(--f-mono);
+    font-size: .855em;
+    background: var(--surface-sunk);
+    padding: .08em .34em;
+    border-radius: 3px;
+  }
+  pre {
+    font-family: var(--f-mono);
+    font-size: .8rem;
+    line-height: 1.55;
+    background: var(--surface-sunk);
+    border: 1px solid var(--rule-soft);
+    border-radius: 5px;
+    padding: .9rem 1.1rem;
+    margin: 0 0 1.2rem;
+    overflow-x: auto;
+  }
+  pre code { background: none; padding: 0; font-size: inherit; }
+  pre.mermaid { background: none; border: 0; padding: 0; text-align: center; }
+
+  blockquote {
+    background: var(--surface-sunk);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 5px 5px 0;
+    padding: 1rem 1.2rem;
+    margin: 0 0 1.3rem;
+    font-size: .96rem;
+  }
+  blockquote > :last-child { margin-bottom: 0; }
+
+  ul.task-list { list-style: none; padding-left: .2rem; }
+  ul.task-list input { margin: 0 .5rem 0 0; }
+
+  /* ---------- tables ---------- */
+
+  .scroll { overflow-x: auto; margin: 0 0 1.4rem; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--f-display);
+    font-size: .855rem;
+    font-variant-numeric: tabular-nums;
+  }
+  th {
+    text-align: left;
+    font-weight: 600;
+    font-size: .66rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    padding: 0 1rem .5rem 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  td {
+    padding: .6rem 1rem .6rem 0;
+    border-bottom: 1px solid var(--rule-soft);
+    vertical-align: top;
+  }
+  td:last-child, th:last-child { padding-right: 0; }
+
+  footer {
+    margin-top: 4rem;
+    padding-top: 1.5rem;
+    border-top: 2px solid var(--ink);
+    font-family: var(--f-mono);
+    font-size: .74rem;
+    color: var(--ink-faint);
+    display: flex;
+    flex-wrap: wrap;
+    gap: .4rem 1.5rem;
+  }
+
+  @media print {
+    nav, footer { display: none; }
+    pre { white-space: pre-wrap; }
+  }
+</style>
+</head>
+<body>
+<nav class="site-nav" aria-label="Site">
+  <ul>
+    <li><a class="brand" href="../">v1.38 Docs</a></li>
+    <li><a href="../">Onboarding</a></li>
+    <li><a href="../present.html">Slides</a></li>
+    <li><a href="release-notes-walkthrough.html" aria-current="page">Release notes: step by step</a></li>
+    <li><a href="release-notes.html">Release notes: how it works</a></li>
+    <li><a href="reference-docs.html">Reference docs</a></li>
+  </ul>
+</nav>
+
+<div class="page">
+
+  <header class="masthead">
+    <div class="eyebrow">v1.38 Docs · Training</div>
+    <h1>Running release notes — step by step</h1>
+  </header>
+
+  <main>
+<p>The recipe. For <em>why</em> it works this way, and the failure
+modes, read <a href="release-notes.html">release-notes.md</a> after.</p>
+<p>Worked example uses <strong>v1.37</strong>, which is already cut, so
+nothing you do here can affect v1.38.</p>
+<h2 id="the-whole-thing-in-four-sentences">The whole thing in four
+sentences</h2>
+<ol type="1">
+<li>Every PR merged into <code>k/k</code> can carry a release note in
+its description.</li>
+<li><code>krel</code> collects every note between the last tag and this
+one, and <strong>asks you about each one</strong>.</li>
+<li>Your answer is saved as a small YAML file — one per PR — under
+<code>maps/</code>.</li>
+<li>The published notes are those YAML files rendered into Markdown.
+<strong>The maps are the source of truth; the draft is
+output.</strong></li>
+</ol>
+<p>That last point is the one that catches people. Editing
+<code>release-notes-draft.md</code> by hand feels like it works, and the
+next <code>krel</code> run silently destroys it.</p>
+<hr />
+<h2 id="part-1--set-up-once">Part 1 · Set up, once</h2>
+<h3 id="install-krel">Install <code>krel</code></h3>
+<pre class="shell"><code>go install k8s.io/release/cmd/krel@latest</code></pre>
+<p>Or from a <a
+href="https://github.com/kubernetes/release"><code>kubernetes/release</code></a>
+checkout: <code>./hack/get-krel</code>, or
+<code>./compile-release-tools krel</code>.</p>
+<p>Check it: <code>krel version</code>.</p>
+<h3 id="token">Token</h3>
+<p>Make a GitHub token with <strong><code>public_repo</code> scope
+only</strong> — nothing else.</p>
+<pre class="shell"><code>export GITHUB_TOKEN=ghp_yourtokenhere</code></pre>
+<h3 id="editor">Editor</h3>
+<p><code>krel</code> reads <code>$KUBE_EDITOR</code> first, then
+<code>$EDITOR</code>. Setting <code>KUBE_EDITOR</code> leaves your git
+editor alone:</p>
+<pre class="shell"><code>export KUBE_EDITOR=&quot;code -w&quot;     # or &quot;subl -w&quot;, or vim / nano</code></pre>
+<p><strong>VS Code and Sublime need the <code>-w</code>.</strong>
+Without it the command returns the instant it hands the file over, so
+<code>krel</code> sees an unsaved file and records the note unchanged —
+silently. Test it first; this should block until you close the tab:</p>
+<pre class="shell"><code>code -w /tmp/krel-test.yaml</code></pre>
+<p>If <code>code</code> isn't found: VS Code → <code>Cmd+Shift+P</code>
+→ <em>Shell Command: Install 'code' command in PATH</em>. Hand control
+back by closing the <strong>tab</strong>, not the window. Don't put
+quotes or backslashes inside the variable — krel splits it on spaces,
+and anything fancier gets punted to <code>$SHELL</code>.</p>
+<p><strong>Turn off format-on-save for YAML.</strong> If Prettier or
+another formatter runs on save, <code>Cmd+S</code> re-indents the map
+and can break it. Either save with <code>Cmd+K S</code> (<em>Save
+without Formatting</em>), or rely on
+<code>"files.autoSave": "afterDelay"</code>, which saves without running
+formatters. With auto-save on, closing the tab no longer discards your
+edits: to skip a note, undo back to the original or empty the file.</p>
+<hr />
+<h2 id="part-2--the-run">Part 2 · The run</h2>
+<h3 id="step-1--know-your-tag">Step 1 — know your tag</h3>
+<p>You cut notes <strong>after</strong> a pre-release tag is pushed.
+v1.37's were:</p>
+<p><code>v1.37.0-alpha.1</code> · <code>alpha.2</code> ·
+<code>alpha.3</code> · <code>beta.0</code> · <code>rc.0</code> ·
+<code>rc.1</code> · final</p>
+<p>Our v1.38 dates are in Sheet 2 of the responsibility sheet, first one
+<strong>Wed 23 Sep</strong>.</p>
+<h3 id="step-2--run-it">Step 2 — run it</h3>
+<pre class="shell"><code>krel release-notes \
+  --create-draft-pr \
+  --fork=&lt;your-github-username&gt; \
+  --tag &quot;v1.37.0-alpha.2&quot; \
+  --fix \
+  --log-level trace 2&gt;&amp;1 | tee krel-output.log</code></pre>
+<div class="scroll">
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--tag</code></td>
+<td>Which pre-release you're cutting notes for</td>
+</tr>
+<tr>
+<td><code>--fork</code></td>
+<td><strong>Your</strong> GitHub username — where the branch gets
+pushed</td>
+</tr>
+<tr>
+<td><code>--fix</code></td>
+<td>Turns on the interactive review. Without it you get a draft nobody
+has read.</td>
+</tr>
+<tr>
+<td><code>--create-draft-pr</code></td>
+<td>Opens the PR against <code>k/sig-release</code> at the end</td>
+</tr>
+<tr>
+<td><code>--nomock</code></td>
+<td><strong>Add this for a real cut.</strong> Without it the run is a
+mock and your edits don't reach a PR.</td>
+</tr>
+<tr>
+<td><code>tee</code></td>
+<td>Keep the log. When something goes wrong this is the only
+record.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Run it from any directory.</strong> <code>krel</code> clones
+<code>k/k</code> to <code>$TMPDIR/k8s</code> (cached, so only the first
+run downloads it) and <code>k/sig-release</code> to its own temp dir,
+which it deletes after opening the PR. Neither is your working checkout,
+and nothing you have open is touched.</p>
+<p>It then queries every PR in range. <strong>This is slow</strong> —
+minutes early in the cycle, much longer near Code Freeze. Expected, not
+broken.</p>
+<p>You also need an <strong>SSH key on your GitHub account</strong>:
+krel pushes the branch over SSH, not with <code>GITHUB_TOKEN</code>. The
+token only covers the API call that opens the PR. Check with
+<code>ssh -T git@github.com</code>.</p>
+<h3 id="step-3--say-yes-to-the-first-prompt">Step 3 — say yes to the
+first prompt</h3>
+<p>Before anything happens you get:</p>
+<pre><code>Create draft pull request? (Y/n)</code></pre>
+<p><strong>Answer <code>Y</code>, or press Enter.</strong> This is not
+just the PR — the clone, the gather, the <code>--fix</code> review loop
+and the map writing are all inside the function this prompt guards.
+Answer <code>n</code> and krel does nothing at all, then prints
+<code>Release notes generation complete!</code> anyway. That message is
+unconditional; it does not mean work happened.</p>
+<p>You get a <strong>second</strong> prompt at the very end, after the
+review loop, and <em>that</em> is the one that actually files the
+PR:</p>
+<pre><code>Create pull request with your changes? (y/n)</code></pre>
+<p>Because you passed <code>--fix</code>, krel always asks this rather
+than filing automatically. Answer <code>n</code> and it leaves the local
+<code>k/sig-release</code> clone in place with instructions for pushing
+by hand.</p>
+<blockquote>
+<p>⚠️ <strong>Practising against an old tag?</strong> Say <code>n</code>
+to the second prompt. <code>--create-draft-pr</code> opens a real PR
+against <code>kubernetes/sig-release</code>, and <code>--nomock</code>
+does not prevent it. To explore with no PR path at all, drop
+<code>--create-draft-pr</code> — see <a
+href="#part-4--do-it-now-safely">Part 4</a>.</p>
+</blockquote>
+<h3 id="step-4--the-loop">Step 4 — the loop</h3>
+<p>First question:</p>
+<pre><code>Would you like to continue from the last session? (Y/n)</code></pre>
+<p><strong>Answer <code>Y</code> in a real run.</strong> The session
+files then skip every note already reviewed, leaving only what arrived
+since the last tag — that's what makes the rotation survivable. Answer
+<code>n</code> and you review all ~350 from scratch, which is only
+useful when you're deliberately practising.</p>
+<p>Then, per note:</p>
+<pre><code>Release Note for PR 138001:
+===========================
+Pull Request URL: https://github.com/kubernetes/kubernetes/pull/138001
+✨ Note contents was previously modified with a map
+    Author: @rogowski-piotr
+    SIGs: [node testing]
+    Kinds: [cleanup]
+    Areas: [test]
+    Feature: false
+    ActionRequired: false
+    DoNotPublish: false
+ &gt;&gt; Text:
+    │ Removed the `KubeletMinVersion` label from the DRA e2e test covering multiple
+    │ ResourceClaims.
+
+- Fix note for PR #138001? (y/N)</code></pre>
+<p>Two answers:</p>
+<ul>
+<li><strong><code>n</code> / Enter</strong> — the note is fine. Marked
+reviewed, never shown again.</li>
+<li><strong><code>y</code></strong> — opens your editor.</li>
+</ul>
+<p>Read the three signals before answering:</p>
+<div class="scroll">
+<table>
+<thead>
+<tr>
+<th>Signal</th>
+<th>Means</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>✨ Note contents was previously modified with a map</code></td>
+<td>Someone already curated this. Usually <code>n</code>.</td>
+</tr>
+<tr>
+<td><code>&gt;&gt;</code> beside a field</td>
+<td><em>That</em> field is what the map changed. Fields without it are
+as the author wrote them.</td>
+</tr>
+<tr>
+<td>No <code>✨</code> at all</td>
+<td>Raw from the PR body, nobody has looked at it. This is where your
+work is.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The example above is worth studying, because it's already correct.
+The author wrote <em>"Remove<strong>s</strong> the
+<code>KubeletMinVersion</code> label ... multiple
+<code>`ResourceClaims`</code>"</em>; the map changed it to
+<em>"Remove<strong>d</strong> ... multiple ResourceClaims"</em> — past
+tense, and API kind unbackticked. Both style rules, in one edit. Correct
+answer: <code>n</code>.</p>
+<h4 id="the-giant-red-warning-is-noise">The giant red warning is
+noise</h4>
+<p>Every mapped note also prints:</p>
+<pre><code>level=warning msg=&quot;Original PR body of release note mapping changed for PR: #138001&quot;
+level=warning msg=&quot;The diff between actual release note body and mapped one is: ...&quot;</code></pre>
+<p>…followed by the entire PR template in red. It fires because maps are
+written with <code>pr_body: ""</code>, so the stored body never matches
+the real one. <strong>It says nothing about the note.</strong> Ignore
+it. Running at <code>--log-level info</code> instead of
+<code>trace</code> cuts most of the surrounding noise.</p>
+<p><strong><code>Ctrl+C</code> is safe.</strong> Progress is saved to a
+session file, so the next run resumes and only shows you what's new. You
+are not expected to do 300 notes in one sitting.</p>
+<h3 id="step-5--editing-a-note">Step 5 — editing a note</h3>
+<p>The editor opens a YAML file where <strong>changed fields are live
+and unchanged fields are commented out</strong>. To change something,
+uncomment the line and edit it:</p>
+<pre class="yaml"><code>pr: 117119
+releasenote:
+  text: |-
+    ACTION REQUIRED: Fixed `eventRecordQPS` handling in `kubelet` configuration to treat 0 as
+    unlimited (no rate limit), aligning behavior with the documentation.
+  # author: HirazawaUi
+  sigs:
+  - api-machinery
+  - auth
+  - node
+  # kinds:
+  # - bug</code></pre>
+<h4 id="saving-and-handing-control-back">Saving and handing control
+back</h4>
+<p>krel logs the file it opened, then blocks:</p>
+<pre><code>level=info msg=&quot;Opening file with editor [code -w /var/folders/.../release-notes-map-2182480457.yaml]&quot;</code></pre>
+<div class="scroll">
+<table>
+<thead>
+<tr>
+<th>Editor</th>
+<th>Save, then</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>VS Code</td>
+<td><code>Cmd+K S</code> (or wait for auto-save), then
+<strong><code>Cmd+W</code> to close the tab</strong></td>
+</tr>
+<tr>
+<td>Sublime</td>
+<td><code>Cmd+S</code>, then close the tab</td>
+</tr>
+<tr>
+<td>vim</td>
+<td><code>:wq</code></td>
+</tr>
+<tr>
+<td>nano</td>
+<td><code>Ctrl+O</code>, Enter, <code>Ctrl+X</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>In VS Code, saving is not enough</strong> —
+<code>code -w</code> returns when the <em>tab</em> closes, not when the
+file is written. Save and leave the tab open and krel sits there forever
+looking idle.</p>
+<p>Changed your mind mid-edit? Close the tab without saving. krel logs
+<em>"YAML mapfile is blank, ignoring"</em> and moves to the next note.
+Nothing is lost.</p>
+<p>Other rules that actually bite:</p>
+<ul>
+<li><strong><code>pr:</code> and <code>releasenote:</code> must stay
+uncommented.</strong> Comment either out and the file is invalid.</li>
+<li><strong>Always include the note <code>text</code>, even when you
+only meant to change <code>sigs</code> or <code>kinds</code>.</strong>
+<code>krel release-notes validate</code> fails a map with no
+<code>text</code> field.</li>
+<li><strong>Quote the text if it contains a colon followed by a
+space.</strong> YAML reads <code>: </code> as a new key, even inside
+backticks. <code>ACTION REQUIRED: …</code>,
+<code>labelSelector: {}</code> and <code>Accept: application/json</code>
+all need <code>text: "…"</code>. A colon followed by anything else, as
+in <code>https://</code> or <code>{"a":1}</code>, is fine.</li>
+<li><strong>Keep the text on one line</strong>, or use
+<code>text: |-</code> with the continuation lines indented. Notes are
+one line per bullet, so don't hand-wrap them.</li>
+<li><strong>Indent consistently.</strong> The simplest edit is to delete
+<code># </code> from <code>pr:</code> and <code>releasenote:</code>, so
+they start at the left edge, and <code>#</code> plus one space from
+<code>text:</code>, which leaves it indented two spaces.</li>
+<li><strong>Hide a note with <code>do_not_publish: true</code></strong>
+under <code>releasenote:</code>, for duplicates or for a change that a
+later PR in the same cycle cancels. It still needs
+<code>text</code>.</li>
+<li>Bad YAML → krel says so and offers a retry; you don't lose the
+note.</li>
+<li>What you write is what ships. Past tense, verb first, jargon
+explained.</li>
+</ul>
+<p>Use the team's <a
+href="https://github.com/kernel-kun/release-team-utils/blob/main/release-notes-style-guide.md">release
+notes style cheatsheet</a>. It adapts the <a
+href="https://kubernetes.io/docs/contribute/style/style-guide/">docs
+style guide</a> for notes. The rules that come up most:</p>
+<div class="scroll">
+<table>
+<tbody>
+<tr>
+<td>API kinds</td>
+<td>plain PascalCase, no backticks: ConfigMap, ResourceClaim</td>
+</tr>
+<tr>
+<td>Fields</td>
+<td>backticked, as the API path: <code>`status.reservedFor`</code>, not
+the Go struct path</td>
+</tr>
+<tr>
+<td>Components, flags, metrics, feature gates, versions</td>
+<td>backticked: <code>`kubelet`</code>, <code>`--fork`</code>,
+<code>`v1.38`</code></td>
+</tr>
+<tr>
+<td>Graduation</td>
+<td>Start case: Alpha, Beta, GA, never <code>BETA</code></td>
+</tr>
+<tr>
+<td>Field values</td>
+<td>plain, unquoted: set <code>podManagementPolicy</code> to
+Parallel</td>
+</tr>
+<tr>
+<td>Openings</td>
+<td>no <code>kubelet:</code> or <code>DRA:</code> prefixes, and no
+"now", "e.g." or "we"</td>
+</tr>
+<tr>
+<td>Periods</td>
+<td><strong>outside</strong> closing quotes</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>If a note is vague, open the PR and write what changed for users.
+Where you can't tell, ask the author rather than guessing.</p>
+<h3 id="step-6--what-you-actually-produced">Step 6 — what you actually
+produced</h3>
+<p>One file per PR, in
+<code>releases/release-1.38/release-notes/maps/pr-&lt;number&gt;-map.yaml</code>.</p>
+<p>Real one from 1.37 — <a
+href="https://github.com/kubernetes/sig-release/blob/master/releases/release-1.37/release-notes/maps/pr-117119-map.yaml"><code>pr-117119-map.yaml</code></a>:</p>
+<pre class="yaml"><code>pr: 117119
+pr_body: &quot;&quot;
+releasenote:
+  text: |-
+    ACTION REQUIRED: Fixed `eventRecordQPS` handling in `kubelet` configuration to treat 0 as
+    unlimited (no rate limit), aligning behavior with the documentation. Users relying on the
+    previous default behavior should explicitly set a non-zero value (for example, 50).
+  sigs:
+  - api-machinery
+  - auth
+  - node
+  kinds:
+  - bug
+  areas:
+  - kubelet
+  - code-generation</code></pre>
+<p>That renders into the draft as the ACTION REQUIRED bullet you can
+read at <a
+href="https://github.com/kubernetes/sig-release/blob/master/releases/release-1.37/release-notes/release-notes-draft.md"><code>release-notes-draft.md</code></a>.
+1.37 accumulated <strong>350</strong> of these.</p>
+<p><strong>Your maps won't look like that yet.</strong> krel saves only
+the lines you uncommented, usually just <code>pr</code>,
+<code>releasenote</code> and <code>text</code>. It also copies the whole
+PR description into <code>pr_body</code>. Step 8 brings them into the
+team layout above.</p>
+<h3 id="step-7--the-pr">Step 7 — the PR</h3>
+<p>On exit <code>krel</code> offers to push and open the PR for you. Say
+yes — it pushes to your <code>sig-release</code> fork and files it.</p>
+<p>Decline and it leaves the clone in a temp dir; you push by hand.
+Either way <strong>check that both <code>release-notes-draft.md</code>
+and <code>release-notes-draft.json</code> are in the diff.</strong> They
+must move together.</p>
+<h3 id="step-8--clean-up-the-maps">Step 8 — clean up the maps</h3>
+<p>Check out the PR branch in your <code>sig-release</code> fork and run
+<a href="normalize_maps.py"><code>normalize_maps.py</code></a>. It keeps
+your <code>text</code> and any field you set, fills in
+<code>sigs</code>, <code>kinds</code> and <code>areas</code> from
+<code>release-notes-draft.json</code>, and sets
+<code>pr_body: ""</code>:</p>
+<pre class="shell"><code>git fetch origin release-notes-draft-&lt;tag&gt;
+git switch -c release-notes-draft-&lt;tag&gt; --track origin/release-notes-draft-&lt;tag&gt;
+
+python3 normalize_maps.py releases/release-1.38/release-notes
+krel release-notes validate --path-to-release-notes releases/release-1.38/release-notes/maps</code></pre>
+<p>Maps that are already in the layout don't change, so it's safe to run
+at every cut. To hide a map from an earlier cut, add its PR number after
+the path; the script sets <code>do_not_publish: true</code> on it.</p>
+<p><code>validate</code> makes zero API calls and takes well under a
+second over hundreds of files. Commit and push to the same branch.</p>
+<h3 id="step-9--the-pr-description">Step 9 — the PR description</h3>
+<p>Use the team template. Take the numbers from the branch, not from
+krel's output:</p>
+<ul>
+<li><strong>Total flagged</strong>: entries in
+<code>release-notes-draft.json</code>, the whole minor cycle so far</li>
+<li><strong>Modified via map files</strong>: files in
+<code>maps/</code></li>
+<li><strong>Untouched</strong>: the difference</li>
+</ul>
+<p>List every note you hid with <code>do_not_publish: true</code> and
+why, and every note you think needs <code>ACTION REQUIRED</code> but
+didn't mark. Those are SIG decisions, so raise them rather than make
+them.</p>
+<hr />
+<h2 id="part-3--reviewing-someone-elses">Part 3 · Reviewing someone
+else's</h2>
+<p>Every run has an assignee <em>and</em> a reviewer. As reviewer,
+check:</p>
+<ul class="task-list">
+<li><label><input type="checkbox" />Every PR merged since the last tag
+was processed — cross-check against <code>k/k</code>, <code>krel</code>
+can skip some (<a
+href="https://github.com/kubernetes/release/issues/4381">k/release#4381</a>)</label></li>
+<li><label><input type="checkbox" />Notes read as past-tense, verb-first
+English with jargon explained</label></li>
+<li><label><input type="checkbox" /><code>ACTION REQUIRED</code> notes
+are in <strong>Urgent Upgrade Notes</strong>, not buried in Changes by
+Kind</label></li>
+<li><label><input type="checkbox" />SIG labels on each note look right,
+and none is empty</label></li>
+<li><label><input type="checkbox" />Same-version dependency updates and
+changes that cancel each other in the cycle are merged or hidden, not
+published twice</label></li>
+<li><label><input type="checkbox" />Every map follows the team layout:
+<code>pr_body: ""</code>, <code>sigs</code>,
+<code>kinds</code></label></li>
+<li><label><input type="checkbox" /><code>.md</code>, <code>.json</code>
+and the map files agree</label></li>
+</ul>
+<p>Don't block on style nits. Correctness and completeness first.</p>
+<hr />
+<h2 id="part-4--do-it-now-safely">Part 4 · Do it now, safely</h2>
+<p>A real run against 1.37 that touches nothing:</p>
+<pre class="shell"><code># 1. Generate from raw PR data — no maps, no PR, nothing written upstream
+krel release-notes --tag v1.37.0-alpha.2
+
+# 2. Same tag, with the team&#39;s 350 maps applied — diff the two.
+#    Everything that differs is human editing work.
+krel release-notes --tag v1.37.0-alpha.2 \
+  --maps-from /absolute/path/to/sig-release/releases/release-1.37/release-notes/maps</code></pre>
+<p><code>--maps-from</code> needs an <strong>absolute</strong> path —
+krel runs from its own temp clone, so a relative path resolves somewhere
+you didn't mean.</p>
+<p>Then open one map beside its rendered bullet in the draft and read
+them together. That single comparison teaches the model faster than any
+explanation.</p>
+<hr />
+<h2 id="sources">Sources</h2>
+<ul>
+<li><a
+href="https://github.com/kernel-kun/release-team-utils/blob/main/v1.37-docs-shadow-runbook.md#8-krel-core-release-notes">kernel-kun's
+v1.37 shadow runbook, §8</a></li>
+<li><a
+href="https://github.com/kubernetes/sig-release/blob/master/release-team/role-handbooks/docs/editing-flow.md">editing-flow.md</a></li>
+<li><a
+href="https://github.com/kubernetes/release/tree/master/docs/krel#installation">krel
+installation</a></li>
+<li><a href="release-notes.html">release-notes.md</a> — the deep
+version, with labs</li>
+</ul>
+  </main>
+
+  <footer>
+    <span>Kubernetes v1.38 · SIG Release · Docs Subteam</span>
+    <span>Maintained by @Caesarsage</span>
+  </footer>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11.4.1/dist/mermaid.min.js"></script>
+<script>
+  if (window.mermaid && document.querySelector("pre.mermaid")) {
+    var dark = document.documentElement.dataset.theme === "dark" ||
+      (!document.documentElement.dataset.theme && matchMedia("(prefers-color-scheme: dark)").matches);
+    mermaid.initialize({ startOnLoad: true, theme: dark ? "dark" : "neutral" });
+  }
+</script>
+</body>
+</html>
