@@ -410,10 +410,14 @@ href="#part-4--do-it-now-safely">Part 4</a>.</p>
 <p>First question:</p>
 <pre><code>Would you like to continue from the last session? (Y/n)</code></pre>
 <p><strong>Answer <code>Y</code> in a real run.</strong> The session
-files then skip every note already reviewed, leaving only what arrived
-since the last tag — that's what makes the rotation survivable. Answer
-<code>n</code> and you review all ~350 from scratch, which is only
-useful when you're deliberately practising.</p>
+files then skip notes already reviewed, leaving mostly what arrived
+since the last tag — that's what makes the rotation survivable. A
+reviewed note comes back if its content changed after the review. That
+includes every note someone fixed with <code>y</code>, and every map
+edited in Step 8. Expect these back with <code>✨</code>; in v1.38
+beta.0 there were about two for every new note. Answer <code>n</code>
+and you review all ~350 from scratch, which is only useful when you're
+deliberately practising.</p>
 <p>Then, per note:</p>
 <pre><code>Release Note for PR 138001:
 ===========================
@@ -434,7 +438,7 @@ Pull Request URL: https://github.com/kubernetes/kubernetes/pull/138001
 <p>Two answers:</p>
 <ul>
 <li><strong><code>n</code> / Enter</strong> — the note is fine. Marked
-reviewed, never shown again.</li>
+reviewed, and not shown again unless its content changes.</li>
 <li><strong><code>y</code></strong> — opens your editor.</li>
 </ul>
 <p>Read the three signals before answering:</p>
@@ -449,7 +453,8 @@ reviewed, never shown again.</li>
 <tbody>
 <tr>
 <td><code>✨ Note contents was previously modified with a map</code></td>
-<td>Someone already curated this. Usually <code>n</code>.</td>
+<td>Already curated in an earlier cut. <strong>Answer <code>n</code>
+without re-reviewing it.</strong></td>
 </tr>
 <tr>
 <td><code>&gt;&gt;</code> beside a field</td>
@@ -481,9 +486,13 @@ written with <code>pr_body: ""</code>, so the stored body never matches
 the real one. <strong>It says nothing about the note.</strong> Ignore
 it. Running at <code>--log-level info</code> instead of
 <code>trace</code> cuts most of the surrounding noise.</p>
-<p><strong><code>Ctrl+C</code> is safe.</strong> Progress is saved to a
-session file, so the next run resumes and only shows you what's new. You
-are not expected to do 300 notes in one sitting.</p>
+<p><strong>Don't press <code>Ctrl+C</code>.</strong> It kills krel at
+once: no draft is regenerated, no PR is opened, and the session file is
+left in a temp clone that never gets pushed, so the next run starts
+over. To stop early, press Enter through the remaining notes
+(<code>n</code> is the default), then answer <code>y</code> to create
+the PR. Every note you skip that way is marked reviewed, so list the PRs
+you didn't actually read in the PR description.</p>
 <h3 id="step-5--editing-a-note">Step 5 — editing a note</h3>
 <p>The editor opens a YAML file where <strong>changed fields are live
 and unchanged fields are commented out</strong>. To change something,

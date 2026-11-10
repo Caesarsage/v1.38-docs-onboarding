@@ -145,8 +145,11 @@ First question:
 Would you like to continue from the last session? (Y/n)
 ```
 
-**Answer `Y` in a real run.** The session files then skip every note already reviewed, leaving only
-what arrived since the last tag — that's what makes the rotation survivable. Answer `n` and you
+**Answer `Y` in a real run.** The session files then skip notes already reviewed, leaving mostly
+what arrived since the last tag — that's what makes the rotation survivable. A reviewed note comes
+back if its content changed after the review. That includes every note someone fixed with `y`, and
+every map edited in Step 8. Expect these back with `✨`; in v1.38 beta.0 there were about two for
+every new note. Answer `n` and you
 review all ~350 from scratch, which is only useful when you're deliberately practising.
 
 Then, per note:
@@ -172,14 +175,15 @@ Pull Request URL: https://github.com/kubernetes/kubernetes/pull/138001
 
 Two answers:
 
-- **`n` / Enter** — the note is fine. Marked reviewed, never shown again.
+- **`n` / Enter** — the note is fine. Marked reviewed, and not shown again unless its content
+  changes.
 - **`y`** — opens your editor.
 
 Read the three signals before answering:
 
 | Signal | Means |
 |---|---|
-| `✨ Note contents was previously modified with a map` | Someone already curated this. Usually `n`. |
+| `✨ Note contents was previously modified with a map` | Already curated in an earlier cut. **Answer `n` without re-reviewing it.** |
 | `>>` beside a field | *That* field is what the map changed. Fields without it are as the author wrote them. |
 | No `✨` at all | Raw from the PR body, nobody has looked at it. This is where your work is. |
 
@@ -201,8 +205,11 @@ level=warning msg="The diff between actual release note body and mapped one is: 
 the stored body never matches the real one. **It says nothing about the note.** Ignore it. Running
 at `--log-level info` instead of `trace` cuts most of the surrounding noise.
 
-**`Ctrl+C` is safe.** Progress is saved to a session file, so the next run resumes and only shows
-you what's new. You are not expected to do 300 notes in one sitting.
+**Don't press `Ctrl+C`.** It kills krel at once: no draft is regenerated, no PR is opened, and the
+session file is left in a temp clone that never gets pushed, so the next run starts over. To stop
+early, press Enter through the remaining notes (`n` is the default), then answer `y` to create the
+PR. Every note you skip that way is marked reviewed, so list the PRs you didn't actually read in the
+PR description.
 
 ### Step 5 — editing a note
 
