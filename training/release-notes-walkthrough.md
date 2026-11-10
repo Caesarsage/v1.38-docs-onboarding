@@ -205,11 +205,11 @@ level=warning msg="The diff between actual release note body and mapped one is: 
 the stored body never matches the real one. **It says nothing about the note.** Ignore it. Running
 at `--log-level info` instead of `trace` cuts most of the surrounding noise.
 
-**Don't press `Ctrl+C`.** It kills krel at once: no draft is regenerated, no PR is opened, and the
-session file is left in a temp clone that never gets pushed, so the next run starts over. To stop
-early, press Enter through the remaining notes (`n` is the default), then answer `y` to create the
-PR. Every note you skip that way is marked reviewed, so list the PRs you didn't actually read in the
-PR description.
+**`Ctrl+C` at a `Fix note …? (y/N)` prompt is safe.** krel stops the review, regenerates the draft
+and asks to open the PR as usual. The session file goes into the PR, so the next run resumes where
+you stopped. Don't press it while a note is open in your editor; that kills krel. If the PR prompt
+ignores your first answer after `Ctrl+C`, press Enter or type `y` again. You are not expected to do
+300 notes in one sitting.
 
 ### Step 5 — editing a note
 

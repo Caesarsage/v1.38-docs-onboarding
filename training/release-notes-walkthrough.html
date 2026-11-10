@@ -486,13 +486,14 @@ written with <code>pr_body: ""</code>, so the stored body never matches
 the real one. <strong>It says nothing about the note.</strong> Ignore
 it. Running at <code>--log-level info</code> instead of
 <code>trace</code> cuts most of the surrounding noise.</p>
-<p><strong>Don't press <code>Ctrl+C</code>.</strong> It kills krel at
-once: no draft is regenerated, no PR is opened, and the session file is
-left in a temp clone that never gets pushed, so the next run starts
-over. To stop early, press Enter through the remaining notes
-(<code>n</code> is the default), then answer <code>y</code> to create
-the PR. Every note you skip that way is marked reviewed, so list the PRs
-you didn't actually read in the PR description.</p>
+<p><strong><code>Ctrl+C</code> at a <code>Fix note …? (y/N)</code>
+prompt is safe.</strong> krel stops the review, regenerates the draft
+and asks to open the PR as usual. The session file goes into the PR, so
+the next run resumes where you stopped. Don't press it while a note is
+open in your editor; that kills krel. If the PR prompt ignores your
+first answer after <code>Ctrl+C</code>, press Enter or type
+<code>y</code> again. You are not expected to do 300 notes in one
+sitting.</p>
 <h3 id="step-5--editing-a-note">Step 5 — editing a note</h3>
 <p>The editor opens a YAML file where <strong>changed fields are live
 and unchanged fields are commented out</strong>. To change something,
