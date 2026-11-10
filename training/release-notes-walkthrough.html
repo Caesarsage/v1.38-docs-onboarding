@@ -327,7 +327,7 @@ v1.37's were:</p>
   --fork=&lt;your-github-username&gt; \
   --tag &quot;v1.37.0-alpha.2&quot; \
   --fix \
-  --log-level trace 2&gt;&amp;1 | tee krel-output.log</code></pre>
+  --log-level trace 2&gt;&amp;1 | tee -i krel-output.log</code></pre>
 <div class="scroll">
 <table>
 <thead>
@@ -489,11 +489,13 @@ it. Running at <code>--log-level info</code> instead of
 <p><strong><code>Ctrl+C</code> at a <code>Fix note …? (y/N)</code>
 prompt is safe.</strong> krel stops the review, regenerates the draft
 and asks to open the PR as usual. The session file goes into the PR, so
-the next run resumes where you stopped. Don't press it while a note is
-open in your editor; that kills krel. If the PR prompt ignores your
-first answer after <code>Ctrl+C</code>, press Enter or type
-<code>y</code> again. You are not expected to do 300 notes in one
-sitting.</p>
+the next run resumes where you stopped. This needs the <code>-i</code>
+on <code>tee</code> in the Step 2 command; without it,
+<code>Ctrl+C</code> also stops <code>tee</code>, and krel dies on its
+next log line. Don't press it while a note is open in your editor; that
+kills krel. If the PR prompt ignores your first answer after
+<code>Ctrl+C</code>, press Enter or type <code>y</code> again. You are
+not expected to do 300 notes in one sitting.</p>
 <h3 id="step-5--editing-a-note">Step 5 — editing a note</h3>
 <p>The editor opens a YAML file where <strong>changed fields are live
 and unchanged fields are commented out</strong>. To change something,

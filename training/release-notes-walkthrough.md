@@ -87,7 +87,7 @@ krel release-notes \
   --fork=<your-github-username> \
   --tag "v1.37.0-alpha.2" \
   --fix \
-  --log-level trace 2>&1 | tee krel-output.log
+  --log-level trace 2>&1 | tee -i krel-output.log
 ```
 
 | Flag | What it does |
@@ -207,7 +207,9 @@ at `--log-level info` instead of `trace` cuts most of the surrounding noise.
 
 **`Ctrl+C` at a `Fix note …? (y/N)` prompt is safe.** krel stops the review, regenerates the draft
 and asks to open the PR as usual. The session file goes into the PR, so the next run resumes where
-you stopped. Don't press it while a note is open in your editor; that kills krel. If the PR prompt
+you stopped. This needs the `-i` on `tee` in the Step 2 command; without it, `Ctrl+C` also stops
+`tee`, and krel dies on its next log line. Don't press it while a note is open in your editor; that
+kills krel. If the PR prompt
 ignores your first answer after `Ctrl+C`, press Enter or type `y` again. You are not expected to do
 300 notes in one sitting.
 
